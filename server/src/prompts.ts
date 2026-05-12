@@ -66,10 +66,17 @@ export function buildGenerateModificationsPrompt(
     "## LESSON MATERIALS",
     fmtSection("Lesson overview & skill focus", lesson.sections.overview),
     fmtSection("Facilitation routines (Think & Share, Turn & Talk, partner read, etc.)", lesson.sections.facilitation),
+    // Reading-modality slots. Empty for math/STEM lessons; rendered as empty bodies.
     fmtSection("Reading passage + during-reading questions (TEACHER COPY)", lesson.sections.reading_passage),
     fmtSection("Independent practice — multiple choice", lesson.sections.independent_practice_mcq),
     fmtSection("Independent practice — short response", lesson.sections.independent_practice_short_response),
     fmtSection("Student-led discussion", lesson.sections.student_discussion),
+    // Math-modality slots. Empty for reading lessons; rendered as empty bodies.
+    fmtSection("Direct instruction", lesson.sections.direct_instruction),
+    fmtSection("Worked example (strategy made visible)", lesson.sections.worked_example),
+    fmtSection("Guided practice problems", lesson.sections.guided_practice),
+    fmtSection("Independent practice problems", lesson.sections.independent_practice_problems),
+    fmtSection("Exit ticket", lesson.sections.exit_ticket),
     "",
     "## IEP — RELEVANT SECTIONS",
     fmtSection("Student profile", iep.sections.profile),

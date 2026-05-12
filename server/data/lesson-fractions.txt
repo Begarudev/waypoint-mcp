@@ -1,0 +1,377 @@
+> NOTE: This lesson is synthetic test data for the Waypoint demo. It is a fictional curriculum lesson modeled on Eureka / Open Up Resources structure. Created to exercise the non-reading-lesson modality (Operative Rule 9): no extended reading passage, so §6 of the modification packet must be a parallel scaffolded artifact, not a leveled passage.
+
+
+                          LESSON OVERVIEW
+            "ADDING & SUBTRACTING FRACTIONS WITH UNLIKE DENOMINATORS"
+                                         (This page does not appear on the student copy.)
+
+Unit 4 — Adding and Subtracting Fractions
+Lesson 6 of 12
+
+
+How does this lesson fit into the unit?
+
+   Lesson 1            Lesson 2         Lesson 3           Lesson 4     Lesson 5        Lesson 6         Lesson 7         Lesson 8
+
+  Equivalent          Comparing       Adding with       Subtracting   Estimating      Adding &        Word problems     Subtracting
+   fractions          fractions          like              with         sums &       Subtracting        with unlike     mixed numbers
+                     with unlike      denominators         like        differences      Unlike        denominators        with unlike
+                     denominators                       denominators                Denominators                       denominators
+
+                                                                                    ⬆ You are here! ⬆
+
+
+Knowledge focus                                                                                  This lesson's skill focus
+
+Students extend their understanding of equivalent fractions (Lesson 1) and                     In this lesson, students practice
+addition with like denominators (Lesson 3) to operate on fractions with                       adding and subtracting fractions
+unlike denominators by replacing them with equivalent fractions that have                     with unlike denominators by first
+a common denominator. The least common denominator (LCD) is introduced                        finding a common denominator —
+as the most efficient strategy, but ANY common denominator that yields                              the LCD method.
+equivalent fractions is acceptable.                                                                       [5.NF.A.1]
+
+
+
+Notes to Teachers
+     - This lesson is the first time students are expected to find a common denominator independently. Some students
+       will have seen the procedure in 4th grade — assume they need a re-teach, not a recall prompt.
+     - The visual fraction strip is the primary representation. Use the strip for the worked example before introducing
+       the LCD procedure abstractly.
+     - During Guided Practice, walk the room. The most common error is operating on numerators and denominators
+       independently (e.g., 1/2 + 1/3 = 2/5). Catch this in the first two minutes of Guided Practice and address it
+       with the whole class if more than three students do it.
+     - This is a procedural-fluency lesson. Conceptual understanding from Lesson 1 (equivalent fractions) is the
+       prerequisite. If a student cannot generate equivalent fractions, pull them aside and re-teach Lesson 1 before
+       proceeding.
+
+
+Unit 4: Adding and Subtracting Fractions
+LESSON OVERVIEW (continued)
+
+
+Lesson objective: Students will add and subtract two fractions with unlike denominators by replacing each
+fraction with an equivalent fraction with a common denominator, then operating on the numerators.
+
+Standard: 5.NF.A.1 — Add and subtract fractions with unlike denominators (including mixed numbers) by replacing
+given fractions with equivalent fractions in such a way as to produce an equivalent sum or difference of
+fractions with like denominators.
+
+Prerequisite skills:
+  - Generating equivalent fractions (5.NF.A.1 prerequisite; 4.NF.A.1)
+  - Adding and subtracting fractions with like denominators (4.NF.B.3)
+  - Multiplication facts to 10 × 10 (3.OA.C.7)
+
+Materials:
+  - Pre-printed Guided Practice and Independent Practice handouts (one per student)
+  - Fraction strip reference card (one per student, laminated where possible)
+  - Pencil + eraser
+  - Whiteboards and dry-erase markers (one per student) for the Worked Example
+  - Document camera or board space for the teacher's worked example
+
+
+SUGGESTED PACING
+
+   Part                                                            Lesson Activities                                                             Time
+ Warm-Up
+                     Quick equivalent-fraction review (3 problems on the board). Check for prerequisite skill.                                   5 min
+
+ Direct
+ Instruction         Teacher walks through the LCD procedure using a visual fraction strip + symbolic notation,                                  10 min
+                     side by side.
+
+ Worked
+ Example             Teacher solves 1/2 + 1/3 on the board with strategy thinking made visible ("first I name what                               5 min
+                     the problem is asking, then I find a common denominator, then I rewrite, then I add").
+
+ Guided
+ Practice            Students work 6 problems with the teacher circulating. Stop after problem 2 to debug the                                    12 min
+                     "add numerators and denominators" misconception if it appears.
+
+ Independent
+ Practice            Students complete 8-10 problems independently. Strategy card available; calculator NOT                                      13 min
+                     used (this is a procedural-fluency target).
+
+ Exit Ticket
+                     Two problems, collected. Used to inform tomorrow's warm-up and small-group pulls.                                            5 min
+
+                                                                       ~50 min total
+
+
+
+HOW TO FACILITATE
+
+                  Option 1                                               Option 2                                                 Option 3
+
+
+                         Teacher-led,
+                                                                              Greater student                                            Student-led,
+                        scaffolded and
+                                                                               independence                                              small groups
+                          supportive
+
+
+  - Walk every problem in the Worked              - Walk only the Worked Example and the                       - After Direct Instruction, put students into
+    Example and the first two Guided                first Guided Practice problem. Students                      pairs. One student solves on the
+    Practice problems out loud.                     work the remaining Guided Practice in                        whiteboard while the partner narrates the
+  - Use the fraction strip as the primary           pairs.                                                       strategy ("first you find a common…").
+    representation for the first three            - Hold a 2-minute mid-lesson check-in to                     - Teacher circulates and pulls a small
+    examples; the symbolic-only LCD                 catch the "add the bottoms" misconception                    group of 4-6 students who need more
+    procedure comes after.                          before Independent Practice.                                 scaffolding through Guided Practice
+  - Stop after every Guided Practice              - Use Independent Practice as the primary                      problems 1-3 at the back table while the
+    problem to do a quick whole-class               assessment moment.                                           rest work independently.
+    "show me on your whiteboard."                                                                              - Use the Exit Ticket as the assessment.
+ 50 total minutes for this lesson                ⬆ Recommended for first time through this lesson! ⬆
+
+
+Unit 4: Adding and Subtracting Fractions
+     Name                                                                             Class
+
+
+
+       TEACHER COPY: Adding & Subtracting Fractions with Unlike Denominators
+                                                                            Lesson 6, Unit 4
+               *Answers in blue. To help us ensure assessment security, please do not post or circulate these answers online.*
+
+
+
+DIRECT INSTRUCTION
+
+(10 min — teacher walks through this with the document camera.)
+
+
+Setup: "Today we are going to add and subtract fractions when the bottoms are different. We already know how to
+add fractions when the bottoms are the same — 1/8 + 3/8 = 4/8. The bottoms tell us how many equal pieces the
+whole is cut into, so if the bottoms are different, we are talking about different-sized pieces. We can't add
+different-sized pieces directly. So our job is to turn them into the same-sized pieces first."
+
+
+Visual representation (fraction strips):
+
+  1/2 :    [============]                  (1 strip, half)
+  1/3 :    [========]                      (1 strip, third)
+
+  Trying to add them directly doesn't work — the pieces are different sizes.
+
+  But if I cut the half-strip into 3 equal parts AND the third-strip into 2 equal parts, both become sixths:
+
+  1/2 = 3/6 :    [====][====][====]        (3 strips, each a sixth)
+  1/3 = 2/6 :    [====][====]              (2 strips, each a sixth)
+
+  Now both are sixths. I can add them: 3/6 + 2/6 = 5/6.
+
+
+Symbolic procedure (the LCD method):
+
+  Step 1.  Identify the two denominators.        (e.g., 2 and 3)
+  Step 2.  Find a common denominator.            (e.g., 6 — the LCD of 2 and 3)
+  Step 3.  Rewrite each fraction with the        (1/2 = 3/6; 1/3 = 2/6)
+            common denominator using
+            equivalent fractions.
+  Step 4.  Add (or subtract) the numerators.     (3 + 2 = 5)
+            Keep the denominator the same.
+  Step 5.  Simplify if possible.                 (5/6 is already in simplest form)
+
+
+Why does the LCD method work?
+
+When we rewrite 1/2 as 3/6, we are NOT changing the value of the fraction — we are renaming it. 1/2 and 3/6
+represent the same amount; we are just describing that amount in different units (halves vs. sixths). Once
+both fractions are described in the same units (sixths), we can combine them.
+
+
+
+WORKED EXAMPLE
+
+(5 min — teacher solves on the board, narrating strategy aloud.)
+
+
+Problem:   1/4 + 2/3 = ?
+
+
+Teacher think-aloud (this is the "strategy made visible" — narrate every move):
+
+  "First, I'm going to name what the problem is asking. I see two fractions with different bottoms — 4 and 3.
+   So this is a 'find a common denominator first' problem.
+
+   Second, I find a common denominator. The smallest number that both 4 and 3 divide into evenly is 12. So
+   my LCD is 12.
+
+   Third, I rewrite each fraction with 12 on the bottom.
+       1/4 = ?/12 — I multiplied the bottom by 3 (4 × 3 = 12), so I multiply the top by 3 too: 1 × 3 = 3.
+                    So 1/4 = 3/12.
+       2/3 = ?/12 — I multiplied the bottom by 4 (3 × 4 = 12), so I multiply the top by 4 too: 2 × 4 = 8.
+                    So 2/3 = 8/12.
+
+   Fourth, I add the numerators. 3 + 8 = 11. The bottom stays the same (12).
+       So my answer is 11/12.
+
+   Fifth, I check: can I simplify 11/12? The greatest common factor of 11 and 12 is 1, so 11/12 is already
+   in simplest form. Done."
+
+
+Answer:   1/4 + 2/3 = 11/12
+
+
+Strategy card (post on the board, hand out to students):
+
+  +-----------------------------------------------------------+
+  |   ADDING / SUBTRACTING FRACTIONS — STRATEGY CARD          |
+  |                                                           |
+  |   1. NAME the problem: are the bottoms the same?          |
+  |      - YES → just add (or subtract) the numerators.       |
+  |      - NO  → keep going to step 2.                        |
+  |                                                           |
+  |   2. FIND a common denominator (LCD if you can).          |
+  |                                                           |
+  |   3. REWRITE each fraction with the new denominator.      |
+  |                                                           |
+  |   4. ADD or SUBTRACT the numerators. Keep the bottom.     |
+  |                                                           |
+  |   5. SIMPLIFY if possible. CHECK once. Done.              |
+  +-----------------------------------------------------------+
+
+
+
+GUIDED PRACTICE
+
+(12 min — teacher circulates; whole-class debug after problem 2.)
+Directions: Solve each problem. Show your common denominator. Show the rewritten fractions. Then add or subtract.
+
+
+  1.  1/2 + 1/4 = ?
+
+      Common denominator: 4
+      Rewrite: 1/2 = 2/4
+      Add: 2/4 + 1/4 = 3/4
+      Simplify: already simplest.
+      Answer: 3/4
+
+
+  2.  2/5 + 1/3 = ?
+
+      Common denominator: 15
+      Rewrite: 2/5 = 6/15;  1/3 = 5/15
+      Add: 6/15 + 5/15 = 11/15
+      Answer: 11/15
+
+      (Teacher pause point — check the room. If more than 3 students wrote "3/8" or similar, stop and
+       re-teach the "you cannot add the bottoms" rule using fraction strips.)
+
+
+  3.  5/6 - 1/2 = ?
+
+      Common denominator: 6
+      Rewrite: 1/2 = 3/6
+      Subtract: 5/6 - 3/6 = 2/6
+      Simplify: 2/6 = 1/3
+      Answer: 1/3
+
+
+  4.  3/4 + 1/8 = ?
+
+      Common denominator: 8
+      Rewrite: 3/4 = 6/8
+      Add: 6/8 + 1/8 = 7/8
+      Answer: 7/8
+
+
+  5.  7/10 - 1/5 = ?
+
+      Common denominator: 10
+      Rewrite: 1/5 = 2/10
+      Subtract: 7/10 - 2/10 = 5/10
+      Simplify: 5/10 = 1/2
+      Answer: 1/2
+
+
+  6.  2/3 - 1/4 = ?
+
+      Common denominator: 12
+      Rewrite: 2/3 = 8/12;  1/4 = 3/12
+      Subtract: 8/12 - 3/12 = 5/12
+      Answer: 5/12
+
+
+
+INDEPENDENT PRACTICE
+
+(13 min — students work alone. Strategy card available. No calculator on this lesson — it's a procedural
+fluency target.)
+Directions: Solve each problem. Show your common denominator. Show the rewritten fractions. Then add or
+subtract. Simplify your final answer when possible.
+
+
+  1.  1/3 + 1/6 = ?
+
+      Common denominator: 6;   1/3 = 2/6;   2/6 + 1/6 = 3/6 = 1/2
+      Answer: 1/2
+
+  2.  3/4 - 1/2 = ?
+
+      Common denominator: 4;   1/2 = 2/4;   3/4 - 2/4 = 1/4
+      Answer: 1/4
+
+  3.  2/5 + 3/10 = ?
+
+      Common denominator: 10;  2/5 = 4/10;  4/10 + 3/10 = 7/10
+      Answer: 7/10
+
+  4.  5/8 - 1/4 = ?
+
+      Common denominator: 8;   1/4 = 2/8;   5/8 - 2/8 = 3/8
+      Answer: 3/8
+
+  5.  1/2 + 2/5 = ?
+
+      Common denominator: 10;  1/2 = 5/10;  2/5 = 4/10;  5/10 + 4/10 = 9/10
+      Answer: 9/10
+
+  6.  7/12 - 1/3 = ?
+
+      Common denominator: 12;  1/3 = 4/12;  7/12 - 4/12 = 3/12 = 1/4
+      Answer: 1/4
+
+  7.  3/8 + 1/4 = ?
+
+      Common denominator: 8;   1/4 = 2/8;   3/8 + 2/8 = 5/8
+      Answer: 5/8
+
+  8.  4/5 - 1/2 = ?
+
+      Common denominator: 10;  4/5 = 8/10;  1/2 = 5/10;  8/10 - 5/10 = 3/10
+      Answer: 3/10
+
+  9.  1/6 + 1/4 = ?
+
+      Common denominator: 12;  1/6 = 2/12;  1/4 = 3/12;  2/12 + 3/12 = 5/12
+      Answer: 5/12
+
+  10. 5/6 - 2/3 = ?
+
+      Common denominator: 6;   2/3 = 4/6;   5/6 - 4/6 = 1/6
+      Answer: 1/6
+
+
+
+EXIT TICKET
+
+(5 min — collected. Used to inform tomorrow's warm-up and small-group pulls.)
+Directions: Solve each problem. Show your work. Strategy card is allowed.
+
+
+  1.  2/3 + 1/4 = ?
+
+      Common denominator: 12;  2/3 = 8/12;  1/4 = 3/12;  8/12 + 3/12 = 11/12
+      Answer: 11/12
+
+  2.  3/5 - 1/2 = ?
+
+      Common denominator: 10;  3/5 = 6/10;  1/2 = 5/10;  6/10 - 5/10 = 1/10
+      Answer: 1/10
+
+
+Exit-ticket scoring guide:
+  - Both correct → student is ready for Lesson 7 (word problems with unlike denominators).
+  - One correct, one with a procedural error → small-group pull tomorrow during warm-up.
+  - Both incorrect or blank → 1-on-1 check-in tomorrow; re-teach using fraction strips before pulling
+    into Guided Practice for Lesson 7.

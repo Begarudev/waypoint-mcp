@@ -34,6 +34,27 @@ async function loadPdfText(absPath: string): Promise<string> {
   return result.text.replace(/[ \t]+\n/g, "\n");
 }
 
+// Synthetic .txt fixtures (e.g. `server/data/iep-marcus.txt`) are loaded
+// directly. Same trailing-whitespace normalization as the PDF path so a
+// downstream registry parser doesn't have to care which source produced
+// the text.
+function loadTxt(absPath: string): string {
+  if (!existsSync(absPath)) {
+    throw new Error(
+      `Text source not found at ${absPath}. The Waypoint server expects ` +
+        `synthetic fixtures under \`server/data/*.txt\`.`
+    );
+  }
+  return readFileSync(absPath, "utf8").replace(/[ \t]+\n/g, "\n");
+}
+
+async function loadRegistrySource(source: RegistrySource): Promise<string> {
+  if ("pdfPath" in source) return loadPdfText(source.pdfPath);
+  return loadTxt(source.txtPath);
+}
+
+type RegistrySource = { pdfPath: string } | { txtPath: string };
+
 export type IepSectionKey =
   | "student_info"
   | "concerns"
@@ -65,11 +86,24 @@ export type LessonSectionKey =
   | "overview"
   | "pacing"
   | "facilitation"
+  // Reading-lesson modality (CommonLit-style).
   | "reading_passage"
   | "during_reading_questions"
   | "independent_practice_mcq"
   | "independent_practice_short_response"
-  | "student_discussion";
+  | "student_discussion"
+  // Math-lesson modality (Eureka / Open Up-style).
+  | "direct_instruction"
+  | "worked_example"
+  | "guided_practice"
+  | "independent_practice_problems"
+  | "exit_ticket";
+
+// Every parser must return a value for every key. Keys that don't apply
+// to a particular lesson modality return "" — the loader skips validation
+// of empty sections, but still surfaces them in the prompt context. We
+// require non-empty for `overview` and `facilitation` for every lesson.
+const REQUIRED_LESSON_KEYS: LessonSectionKey[] = ["overview", "facilitation"];
 
 export type Lesson = {
   id: string;
@@ -119,6 +153,22 @@ function assertAllSectionsPopulated(
   }
 }
 
+// Same as above but only requires a named subset of keys to be non-empty.
+// Used for lessons, where the section-key union spans multiple modalities
+// (reading vs math) and not every key applies to every lesson.
+function assertRequiredSectionsPopulated(
+  label: string,
+  sections: Record<string, string>,
+  requiredKeys: string[]
+): void {
+  for (const k of requiredKeys) {
+    const v = sections[k];
+    if (!v || v.trim().length === 0) {
+      throw new Error(`${label} required section ${k} is empty`);
+    }
+  }
+}
+
 // ─── IEP registry ───────────────────────────────────────────────────────────
 
 type IepMetadata = Pick<
@@ -127,11 +177,38 @@ type IepMetadata = Pick<
 >;
 
 type IepRegistryEntry = {
-  /** Absolute path to the source PDF for this IEP. */
-  pdfPath: string;
+  /**
+   * Source of the IEP text. Either a bundled PDF at the repo root
+   * (`pdfPath`) or a synthetic `.txt` fixture under `server/data/`
+   * (`txtPath`). Exactly one is set per entry.
+   */
+  source: RegistrySource;
   parser: (raw: string) => Record<IepSectionKey, string>;
   metadata: IepMetadata;
+  /**
+   * IEP section keys that MUST be non-empty for this student. Keys not in
+   * this list may legitimately be empty (e.g. a student whose IEP has no
+   * ELA annual goal). Defaults to all keys.
+   */
+  requiredKeys?: IepSectionKey[];
 };
+
+const ALL_IEP_KEYS: IepSectionKey[] = [
+  "student_info",
+  "concerns",
+  "vision",
+  "profile",
+  "plaafp_academics",
+  "plaafp_behavioral",
+  "accommodations",
+  "modifications",
+  "goals_counseling",
+  "goals_mathematics",
+  "goals_ela",
+  "services",
+  "assessments",
+  "placement",
+];
 
 function parseJasmineIep(raw: string): Record<IepSectionKey, string> {
   return {
@@ -180,9 +257,58 @@ function parseJasmineIep(raw: string): Record<IepSectionKey, string> {
   };
 }
 
+function parseMarcusIep(raw: string): Record<IepSectionKey, string> {
+  const sections: Record<IepSectionKey, string> = {
+    student_info: slice(raw, /Administrative Data Sheet/, /STUDENT AND PARENT CONCERNS/),
+    concerns: slice(raw, /STUDENT AND PARENT CONCERNS/, /STUDENT AND TEAM VISION/),
+    vision: slice(raw, /STUDENT AND TEAM VISION/, /STUDENT PROFILE/),
+    profile: slice(raw, /STUDENT PROFILE/, /PRESENT LEVELS OF ACADEMIC ACHIEVEMENT AND FUNCTIONAL PERFORMANCE:\s*\n?\s*ACADEMICS/),
+    plaafp_academics: slice(
+      raw,
+      /PRESENT LEVELS OF ACADEMIC ACHIEVEMENT AND FUNCTIONAL PERFORMANCE:\s*\n?\s*ACADEMICS/,
+      /PRESENT LEVELS OF ACADEMIC ACHIEVEMENT AND FUNCTIONAL PERFORMANCE:\s*\n?\s*BEHAVIORAL/
+    ),
+    plaafp_behavioral: slice(
+      raw,
+      /PRESENT LEVELS OF ACADEMIC ACHIEVEMENT AND FUNCTIONAL PERFORMANCE:\s*\n?\s*BEHAVIORAL/,
+      /PRESENT LEVELS OF ACADEMIC ACHIEVEMENT AND FUNCTIONAL PERFORMANCE:\s*\n?\s*COMMUNICATION/
+    ),
+    accommodations: slice(
+      raw,
+      /Accommodations:\s*List the accommodations/,
+      /Modifications:\s*List the modifications/
+    ),
+    modifications: slice(raw, /Modifications:\s*List/, /MEASURABLE ANNUAL GOALS/),
+    goals_counseling: slice(
+      raw,
+      /Goal Area:\s*\n?\s*1 - Counseling/,
+      /Goal Area:\s*\n?\s*2 - Mathematics/
+    ),
+    // Marcus has two math goals (multi-step word problems AND fraction
+    // operations). The `goals_mathematics` section captures both — the
+    // boundary is from goal 2 through the start of the placement block.
+    goals_mathematics: slice(
+      raw,
+      /Goal Area:\s*\n?\s*2 - Mathematics/,
+      /Participation in the General Education Setting/
+    ),
+    // Marcus has no ELA annual goal — at/above grade level in ELA. The
+    // registry entry's `requiredKeys` reflects this; this slot stays empty.
+    goals_ela: "",
+    services: slice(raw, /SERVICE DELIVERY/, /Transportation Services/),
+    assessments: slice(
+      raw,
+      /State and District-Wide Assessments and Accommodations/,
+      /SCHEDULE MODIFICATION/
+    ),
+    placement: slice(raw, /Participation in the General Education Setting/, /SERVICE DELIVERY/),
+  };
+  return sections;
+}
+
 const IEP_REGISTRY: Record<string, IepRegistryEntry> = {
   "jasmine-bailey": {
-    pdfPath: join(REPO_ROOT, "iep"),
+    source: { pdfPath: join(REPO_ROOT, "iep") },
     parser: parseJasmineIep,
     metadata: {
       student_name: "Jasmine Regina Bailey",
@@ -193,6 +319,21 @@ const IEP_REGISTRY: Record<string, IepRegistryEntry> = {
       math_level_summary:
         "Working at a 4th-grade level on iReady; improving multi-digit operations and integer rules; below grade level on multi-step word problems.",
     },
+  },
+  "marcus-chen": {
+    source: { txtPath: join(here, "..", "data", "iep-marcus.txt") },
+    parser: parseMarcusIep,
+    metadata: {
+      student_name: "Marcus Chen",
+      grade: "9th",
+      disability: "Specific Learning Disability — Dyscalculia",
+      reading_level_summary:
+        "At or near grade level (Lexile ~1050) — strong narrative and informational comprehension.",
+      math_level_summary:
+        "Significant deficits — 5th-grade level on iReady; struggles with multi-step word problems, fraction operations, ratio reasoning, and computation under timed conditions.",
+    },
+    // Marcus has no ELA annual goal — at/above grade level in ELA.
+    requiredKeys: ALL_IEP_KEYS.filter((k) => k !== "goals_ela"),
   },
 };
 
@@ -217,7 +358,8 @@ export function loadIep(id: string): Iep {
     );
   }
   const sections = entry.parser(raw);
-  assertAllSectionsPopulated(`IEP[${id}]`, sections);
+  const required = entry.requiredKeys ?? ALL_IEP_KEYS;
+  assertRequiredSectionsPopulated(`IEP[${id}]`, sections, required);
   return { id, ...entry.metadata, sections, raw };
 }
 
@@ -233,36 +375,103 @@ export function listIeps(): Array<{ student_id: string } & IepMetadata> {
 type LessonMetadata = Pick<Lesson, "title" | "subject" | "grade" | "standard" | "duration_minutes">;
 
 type LessonRegistryEntry = {
-  /** Absolute path to the source PDF for this lesson. */
-  pdfPath: string;
+  /** Source of the lesson text — either bundled PDF or synthetic .txt fixture. */
+  source: RegistrySource;
   parser: (raw: string) => Record<LessonSectionKey, string>;
   metadata: LessonMetadata;
+  /**
+   * Lesson section keys that MUST be non-empty for this lesson. Keys not
+   * in this list may be empty — for example, a math lesson has no
+   * `reading_passage`. Defaults to {@link REQUIRED_LESSON_KEYS}.
+   */
+  requiredKeys?: LessonSectionKey[];
 };
 
-function parseCommunityLowe(raw: string): Record<LessonSectionKey, string> {
-  return {
-    overview: slice(raw, /LESSON OVERVIEW/, /Suggested Pacing/),
-    pacing: slice(raw, /Suggested Pacing/, /How do I facilitate this lesson\?/),
-    facilitation: slice(raw, /How do I facilitate this lesson\?/, /TEACHER COPY/),
-    reading_passage: slice(raw, /TEACHER COPY/, /Independent Practice/),
-    during_reading_questions: slice(raw, /DURING READING QUESTIONS/, /Independent Practice/),
-    independent_practice_mcq: slice(
-      raw,
-      /Independent Practice\s*\n?\s*Directions: Answer the multiple choice/,
-      /Independent Practice\s*\n?\s*Directions: Answer the short response/
-    ),
-    independent_practice_short_response: slice(
-      raw,
-      /Independent Practice\s*\n?\s*Directions: Answer the short response/,
-      /Student-Led Discussion/
-    ),
-    student_discussion: slice(raw, /Student-Led Discussion/),
-  };
+const ALL_LESSON_KEYS: LessonSectionKey[] = [
+  "overview",
+  "pacing",
+  "facilitation",
+  "reading_passage",
+  "during_reading_questions",
+  "independent_practice_mcq",
+  "independent_practice_short_response",
+  "student_discussion",
+  "direct_instruction",
+  "worked_example",
+  "guided_practice",
+  "independent_practice_problems",
+  "exit_ticket",
+];
+
+function emptyLessonSections(): Record<LessonSectionKey, string> {
+  const o = {} as Record<LessonSectionKey, string>;
+  for (const k of ALL_LESSON_KEYS) o[k] = "";
+  return o;
 }
+
+function parseCommunityLowe(raw: string): Record<LessonSectionKey, string> {
+  const sections = emptyLessonSections();
+  sections.overview = slice(raw, /LESSON OVERVIEW/, /Suggested Pacing/);
+  sections.pacing = slice(raw, /Suggested Pacing/, /How do I facilitate this lesson\?/);
+  sections.facilitation = slice(raw, /How do I facilitate this lesson\?/, /TEACHER COPY/);
+  sections.reading_passage = slice(raw, /TEACHER COPY/, /Independent Practice/);
+  sections.during_reading_questions = slice(raw, /DURING READING QUESTIONS/, /Independent Practice/);
+  sections.independent_practice_mcq = slice(
+    raw,
+    /Independent Practice\s*\n?\s*Directions: Answer the multiple choice/,
+    /Independent Practice\s*\n?\s*Directions: Answer the short response/
+  );
+  sections.independent_practice_short_response = slice(
+    raw,
+    /Independent Practice\s*\n?\s*Directions: Answer the short response/,
+    /Student-Led Discussion/
+  );
+  sections.student_discussion = slice(raw, /Student-Led Discussion/);
+  return sections;
+}
+
+// Math-lesson layout (Eureka / Open Up-style). Different heading
+// vocabulary, no reading passage. Operative Rule 9 routes §6 of the
+// modification packet to a parallel scaffolded artifact for lessons
+// returned by this parser.
+function parseFractionsLesson(raw: string): Record<LessonSectionKey, string> {
+  const sections = emptyLessonSections();
+  sections.overview = slice(raw, /LESSON OVERVIEW/, /SUGGESTED PACING/);
+  sections.pacing = slice(raw, /SUGGESTED PACING/, /HOW TO FACILITATE/);
+  sections.facilitation = slice(raw, /HOW TO FACILITATE/, /TEACHER COPY/);
+  sections.direct_instruction = slice(raw, /DIRECT INSTRUCTION/, /WORKED EXAMPLE/);
+  sections.worked_example = slice(raw, /WORKED EXAMPLE/, /GUIDED PRACTICE/);
+  sections.guided_practice = slice(raw, /GUIDED PRACTICE/, /INDEPENDENT PRACTICE/);
+  sections.independent_practice_problems = slice(raw, /INDEPENDENT PRACTICE/, /EXIT TICKET/);
+  sections.exit_ticket = slice(raw, /EXIT TICKET/);
+  return sections;
+}
+
+const FRACTIONS_REQUIRED_KEYS: LessonSectionKey[] = [
+  "overview",
+  "pacing",
+  "facilitation",
+  "direct_instruction",
+  "worked_example",
+  "guided_practice",
+  "independent_practice_problems",
+  "exit_ticket",
+];
+
+const COMMUNITY_REQUIRED_KEYS: LessonSectionKey[] = [
+  "overview",
+  "pacing",
+  "facilitation",
+  "reading_passage",
+  "during_reading_questions",
+  "independent_practice_mcq",
+  "independent_practice_short_response",
+  "student_discussion",
+];
 
 const LESSON_REGISTRY: Record<string, LessonRegistryEntry> = {
   "community-lowe": {
-    pdfPath: join(REPO_ROOT, "lesson"),
+    source: { pdfPath: join(REPO_ROOT, "lesson") },
     parser: parseCommunityLowe,
     metadata: {
       title: "What is 'community' and why is it important?",
@@ -275,6 +484,23 @@ const LESSON_REGISTRY: Record<string, LessonRegistryEntry> = {
       },
       duration_minutes: 45,
     },
+    requiredKeys: COMMUNITY_REQUIRED_KEYS,
+  },
+  "fractions-5nf1": {
+    source: { txtPath: join(here, "..", "data", "lesson-fractions.txt") },
+    parser: parseFractionsLesson,
+    metadata: {
+      title: "Adding & Subtracting Fractions with Unlike Denominators",
+      subject: "Math",
+      grade: "5th",
+      standard: {
+        code: "5.NF.A.1",
+        description:
+          "Add and subtract fractions with unlike denominators by replacing given fractions with equivalent fractions with like denominators.",
+      },
+      duration_minutes: 50,
+    },
+    requiredKeys: FRACTIONS_REQUIRED_KEYS,
   },
 };
 
@@ -287,10 +513,10 @@ const LESSON_RAW_CACHE: Map<string, string> = new Map();
 // initialization errors — exactly the behavior we want if a PDF is missing.
 await Promise.all([
   ...Object.entries(IEP_REGISTRY).map(async ([id, entry]) => {
-    IEP_RAW_CACHE.set(id, await loadPdfText(entry.pdfPath));
+    IEP_RAW_CACHE.set(id, await loadRegistrySource(entry.source));
   }),
   ...Object.entries(LESSON_REGISTRY).map(async ([id, entry]) => {
-    LESSON_RAW_CACHE.set(id, await loadPdfText(entry.pdfPath));
+    LESSON_RAW_CACHE.set(id, await loadRegistrySource(entry.source));
   }),
 ]);
 
@@ -309,7 +535,8 @@ export function loadLesson(id: string): Lesson {
     );
   }
   const sections = entry.parser(raw);
-  assertAllSectionsPopulated(`Lesson[${id}]`, sections);
+  const required = entry.requiredKeys ?? REQUIRED_LESSON_KEYS;
+  assertRequiredSectionsPopulated(`Lesson[${id}]`, sections, required);
   return { id, ...entry.metadata, sections, raw };
 }
 
