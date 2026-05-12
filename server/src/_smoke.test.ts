@@ -1,4 +1,4 @@
-// Data-layer smoke tests. Run with: npm run build && node --test dist/_smoke.test.js
+// Data-layer smoke tests. Run with: npm test
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { loadIep, loadLesson, udlMarkdown, type IepSectionKey, type LessonSectionKey } from "./data.js";
