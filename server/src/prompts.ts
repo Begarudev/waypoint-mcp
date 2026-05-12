@@ -50,7 +50,7 @@ export function buildGenerateModificationsPrompt(
     "## CONTEXT FOR THIS TASK",
     "",
     `**Lesson**: ${lesson.title}`,
-    `**Subject / grade / standard**: ${lesson.subject} • ${lesson.grade} • ${lesson.standard}`,
+    `**Subject / grade / standard**: ${lesson.subject} • ${lesson.grade} • ${lesson.standard.code} (${lesson.standard.description})`,
     `**Duration**: ${lesson.duration_minutes} minutes`,
     "",
     `**Student**: ${iep.student_name}`,

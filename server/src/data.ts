@@ -47,7 +47,7 @@ export type Lesson = {
   title: string;
   subject: string;
   grade: string;
-  standard: string;
+  standard: { code: string; description: string };
   duration_minutes: number;
   sections: Record<LessonSectionKey, string>;
   raw: string;
@@ -225,8 +225,11 @@ const LESSON_REGISTRY: Record<string, LessonRegistryEntry> = {
       title: "What is 'community' and why is it important?",
       subject: "ELA",
       grade: "7th",
-      standard:
-        "RI.7.2 (determine and summarize the central idea of a text and identify the details that develop it)",
+      standard: {
+        code: "RI.7.2",
+        description:
+          "determine and summarize the central idea of a text and identify the details that develop it",
+      },
       duration_minutes: 45,
     },
   },

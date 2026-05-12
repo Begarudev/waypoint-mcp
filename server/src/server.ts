@@ -51,7 +51,7 @@ server.registerResource(
       resources: Array.from(lessons.values()).map((l) => ({
         uri: `waypoint://lesson/${l.id}`,
         name: `Lesson — ${l.title}`,
-        description: `${l.subject} ${l.grade} • ${l.standard} • ${l.duration_minutes} min`,
+        description: `${l.subject} ${l.grade} • ${l.standard.code} (${l.standard.description}) • ${l.duration_minutes} min`,
         mimeType: "text/markdown",
       })),
     }),
@@ -228,7 +228,8 @@ server.registerTool(
             title: l.title,
             subject: l.subject,
             grade: l.grade,
-            standard: l.standard,
+            standard_code: l.standard.code,
+            standard_description: l.standard.description,
             duration_minutes: l.duration_minutes,
           })),
           null,
