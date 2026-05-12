@@ -8,9 +8,9 @@
 ## 1. Student snapshot
 
 - **Strengths & interests (IEP: plaafp_academics, plaafp_behavioral):** Attends regularly and "shows up ready to learn"; contributes thoughtful comments when calm; warm with peers; loves helping others, having class jobs, and being praised specifically; enjoys drawing and dance; open to feedback in 1-on-1 check-ins.
-- **Current academic levels — the gap (IEP: plaafp_academics, goals[ELA]):** Overall reading at **3rd grade** (iReady Fall 2025); **Informational Text Comprehension at 2nd grade**; Vocabulary grade 3. The Lowe essay is a dense **~9th–10th-grade informational text** with abstract terms (*normative*, *narrative*, *archetypes*, *manifestations*, *dispersed*, *solidarity*). Independent comprehension on homework currently ranges **0–50%**. Decoding/fluency are adequate; the breakdown is **literal and inferential comprehension**, not word reading.
-- **Named behavior pattern (IEP: plaafp_behavioral, goals[Counseling]):** Academic frustration → **silent withdrawal**: head down on desk, repeated restroom requests, rather than asking for help. She chooses whole group over offered small-group 80% of the time, so she will likely refuse a visible pull-out today. Shutdown is the failure mode this lesson must design around.
-- **Math snapshot (IEP: plaafp_academics, goals[Math]):** Grade 4 on iReady; not the focus today, but relevant for self-monitoring/checklist routines she's already practicing.
+- **Current academic levels — the gap (IEP: plaafp_academics, goals_ela):** Overall reading at **3rd grade** (iReady Fall 2025); **Informational Text Comprehension at 2nd grade**; Vocabulary grade 3. The Lowe essay is a dense **~9th–10th-grade informational text** with abstract terms (*normative*, *narrative*, *archetypes*, *manifestations*, *dispersed*, *solidarity*). Independent comprehension on homework currently ranges **0–50%**. Decoding/fluency are adequate; the breakdown is **literal and inferential comprehension**, not word reading.
+- **Named behavior pattern (IEP: plaafp_behavioral, goals_counseling):** Academic frustration → **silent withdrawal**: head down on desk, repeated restroom requests, rather than asking for help. She chooses whole group over offered small-group 80% of the time, so she will likely refuse a visible pull-out today. Shutdown is the failure mode this lesson must design around.
+- **Math snapshot (IEP: plaafp_academics, goals_mathematics):** Grade 4 on iReady; not the focus today, but relevant for self-monitoring/checklist routines she's already practicing.
 
 ---
 
@@ -58,7 +58,7 @@
 
 - **Identity-first hook (2 min before reading).** Before paragraph 1, ask Jasmine privately: "Name one community you're part of — your dance group, your family, this class, anything." Write it on a sticky note and place it at the top of her packet. Every time the text says "community," her job is to glance at her sticky note and ask "does this fit my community?" This converts the abstract Newcastle example (paragraphs 5–7) into something tied to her named interests (dance, peers, family). *(UDL 7: Welcoming Interests & Identities, IEP: plaafp_behavioral [strengths: drawing, dance, peers, family])*
 - **Class job for Jasmine.** She is the **"Central Idea Tracker"** — her packet has a yellow box at the top labeled "BIG IDEA SO FAR," and her job is to write/update one sentence after paragraphs 2, 7, and 9. This leverages her documented love of class jobs and gives her a public, low-risk reason to stay engaged. *(UDL 8: Sustaining Effort & Persistence, IEP: plaafp_academics [strengths: "loves to help others, have class jobs"])*
-- **Pre-agreed shutdown protocol (replaces head-down avoidance).** Tape a small card to the inside of her folder with three choices she already practices in counseling: ① 90-sec movement break (walk to the pencil sharpener and back), ② fidget tool from her desk caddy, ③ deep-breathing box on the card. When the teacher sees the first warning sign (pencil down, eyes drifting, hand to forehead), tap the desk corner and point at the card — Jasmine picks. This is the in-class application of her Counseling annual goal. *(UDL 9: Emotional Capacity, IEP: goals[Counseling] — "independently request or initiate a calming strategy… 4 out of 5 opportunities")*
+- **Pre-agreed shutdown protocol (replaces head-down avoidance).** Tape a small card to the inside of her folder with three choices she already practices in counseling: ① 90-sec movement break (walk to the pencil sharpener and back), ② fidget tool from her desk caddy, ③ deep-breathing box on the card. When the teacher sees the first warning sign (pencil down, eyes drifting, hand to forehead), tap the desk corner and point at the card — Jasmine picks. This is the in-class application of her Counseling annual goal. *(UDL 9: Emotional Capacity, IEP: goals_counseling — "independently request or initiate a calming strategy… 4 out of 5 opportunities")*
 - **Specific praise script, not generic.** When she contributes, name the *skill*: "Jasmine, you found the word 'narrative' in paragraph 9 and connected it to paragraph 4 — that's exactly what tracking the central idea looks like." Generic "good job" is documented as less effective for her than specific praise. *(UDL 8: Sustaining Effort & Persistence, IEP: plaafp_academics [strengths: "motivated by specific positive praise"])*
 - **Choice in partner-read paragraph 3–7.** Offer: "You can read aloud with your partner, follow along while they read, or listen to the audio on the Chromebook with headphones." *(Note: text-to-speech / audio playback is a **new recommendation** — Jasmine's IEP marks "requires AT: No." This is a within-lesson UDL support, not an added IEP service.)* *(UDL 7: Welcoming Interests & Identities, IEP: plaafp_behavioral [shutdown pattern])*
 
@@ -76,10 +76,10 @@
   1. "Lowe means that a community is a group of people who share ____."
   2. "A 'narrative' is a ____. It is 'identity-forming' because ____."
   3. "One detail from the text that proves this is, in paragraph ___, '____.'"
-  These map directly to her ELA goal benchmarks (claim → evidence → analysis). *(UDL 5: Expression & Communication, IEP: goals[ELA] — "write a claim that accurately answers… find 3 effective pieces of textual evidence… write analysis")*
-- **Annotation key with only 2 symbols, not 5.** Underline = central idea word. Star = detail that proves it. She has been documented to "often not annotate"; reducing the system to two marks raises the chance she actually uses it. *(UDL 6: Strategy Development, IEP: goals[ELA] — "accurately annotate a given text for the prompt, labeled annotation focus, supporting detail")*
+  These map directly to her ELA goal benchmarks (claim → evidence → analysis). *(UDL 5: Expression & Communication, IEP: goals_ela — "write a claim that accurately answers… find 3 effective pieces of textual evidence… write analysis")*
+- **Annotation key with only 2 symbols, not 5.** Underline = central idea word. Star = detail that proves it. She has been documented to "often not annotate"; reducing the system to two marks raises the chance she actually uses it. *(UDL 6: Strategy Development, IEP: goals_ela — "accurately annotate a given text for the prompt, labeled annotation focus, supporting detail")*
 - **Choice of response mode for the partner discussion (last 5 min, 3 questions).** Options: (a) talk and have partner scribe, (b) write then read aloud, (c) draw the community then label it. Each still produces an artifact for the "My answer" box. *(UDL 5: Expression & Communication, IEP: plaafp_behavioral [strengths: drawing])*
-- **Self-monitoring checkpoint on the existing SELF CHECKLIST.** Add one line at the top: "Before you write — did you point to the highlighted sentence in paragraph 9?" Builds the self-monitoring step her ELA goal benchmarks call for. *(UDL 6: Strategy Development, IEP: goals[ELA] benchmarks + accommodations [checklists])*
+- **Self-monitoring checkpoint on the existing SELF CHECKLIST.** Add one line at the top: "Before you write — did you point to the highlighted sentence in paragraph 9?" Builds the self-monitoring step her ELA goal benchmarks call for. *(UDL 6: Strategy Development, IEP: goals_ela benchmarks + accommodations [checklists])*
 - **Pre-agreed signal for "I need a 1:1 check-in"** — small green/red card on her desk corner she can flip without speaking. Directly counters the "rather than asking for help, Jasmine tends to shut down" pattern. *(UDL 4: Interaction + Engagement.G9, IEP: plaafp_behavioral)*
 
 ---
@@ -100,7 +100,7 @@
 - **DOK 3 — Analyze:**
   "Why does Lowe spend paragraphs 5–7 talking about himself and Newcastle before he tests his definition in paragraph 8? How does the personal example make his central idea stronger than if he had skipped it?"
 
-*(UDL 3: Building Knowledge + Action.G5, IEP: goals[ELA] — literal then inferential comprehension; plaafp_academics — gap between literal and inferential)*
+*(UDL 3: Building Knowledge + Action.G5, IEP: goals_ela — literal then inferential comprehension; plaafp_academics — gap between literal and inferential)*
 
 ---
 
@@ -131,7 +131,7 @@
 
 **Why this is the same standard, different mode:** She is still (a) determining a central idea (Lowe's definition), (b) applying it, and (c) citing the supporting detail from the text. RI.7.2 intact.
 
-**Doubles as progress monitoring for IEP goal[ELA]:** the claim sentence = "write a claim that accurately answers each part of the question"; the three labeled drawings + text-tie = "independently find 3 effective pieces of textual evidence… write analysis to show how her evidence is relevant." Score it on the existing curriculum-based rubric and bank it as a work sample toward the 50%→75% target. *(UDL 5: Expression & Communication + Engagement.G7, IEP: goals[ELA] criteria + plaafp_behavioral strengths [drawing])*
+**Doubles as progress monitoring for IEP goal[ELA]:** the claim sentence = "write a claim that accurately answers each part of the question"; the three labeled drawings + text-tie = "independently find 3 effective pieces of textual evidence… write analysis to show how her evidence is relevant." Score it on the existing curriculum-based rubric and bank it as a work sample toward the 50%→75% target. *(UDL 5: Expression & Communication + Engagement.G7, IEP: goals_ela criteria + plaafp_behavioral strengths [drawing])*
 
 ---
 

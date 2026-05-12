@@ -15,6 +15,9 @@ export type IepSectionKey =
   | "accommodations"
   | "modifications"
   | "goals"
+  | "goals_counseling"
+  | "goals_mathematics"
+  | "goals_ela"
   | "services"
   | "assessments"
   | "placement";
@@ -109,6 +112,21 @@ export function loadIep(): Iep {
     accommodations: slice(raw, /ACCOMMODATIONS AND MODIFICATIONS/, /Modifications:/),
     modifications: slice(raw, /Modifications:\s*List/, /MEASURABLE ANNUAL GOALS/),
     goals: slice(raw, /MEASURABLE ANNUAL GOALS/, /Participation in the General Education Setting/),
+    goals_counseling: slice(
+      raw,
+      /Goal Area:\s*\n?\s*1 - Counseling/,
+      /Goal Area:\s*\n?\s*2 - Mathematics/
+    ),
+    goals_mathematics: slice(
+      raw,
+      /Goal Area:\s*\n?\s*2 - Mathematics/,
+      /Goal Area:\s*\n?\s*3 - ELA/
+    ),
+    goals_ela: slice(
+      raw,
+      /Goal Area:\s*\n?\s*3 - ELA/,
+      /Participation in the General Education Setting/
+    ),
     services: slice(raw, /SERVICE DELIVERY/, /Transportation Services/),
     assessments: slice(
       raw,

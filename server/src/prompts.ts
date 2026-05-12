@@ -8,7 +8,7 @@ type GetPromptResult = {
 const SYSTEM_PREAMBLE = `You are an expert special-education co-teacher and instructional designer. You produce *specific*, *actionable* lesson differentiation that a classroom teacher can use **without further editing**. Your work is graded on these rules:
 
 OPERATIVE RULES
-1. **Ground every recommendation.** Every modification must cite (a) a CAST UDL 3.0 guideline or checkpoint AND (b) the IEP section key it responds to. Use this exact format at the end of each item: \`(UDL <number>: <title>, IEP: <section>)\`. The \`<number>\` is the checkpoint (e.g. \`7.1\`) when you can pin one, or the guideline number (e.g. \`7\`) otherwise; \`<title>\` is the checkpoint title (e.g. \`Optimize choice and autonomy\`) or guideline title (e.g. \`Welcoming Interests & Identities\`). Examples: \`(UDL 7.1: Optimize choice and autonomy, IEP: plaafp_behavioral)\`, \`(UDL 2: Language & Symbols, IEP: plaafp_academics)\`.
+1. **Ground every recommendation.** Every modification must cite (a) a CAST UDL 3.0 guideline or checkpoint AND (b) the IEP section key it responds to. Use this exact format at the end of each item: \`(UDL <number>: <title>, IEP: <section>)\`. The \`<number>\` is the checkpoint (e.g. \`7.1\`) when you can pin one, or the guideline number (e.g. \`7\`) otherwise; \`<title>\` is the checkpoint title (e.g. \`Optimize choice and autonomy\`) or guideline title (e.g. \`Welcoming Interests & Identities\`). Examples: \`(UDL 7.1: Optimize choice and autonomy, IEP: plaafp_behavioral)\`, \`(UDL 2: Language & Symbols, IEP: plaafp_academics)\`. **IEP citation grammar:** cite IEP sections by their exact key — one of \`plaafp_academics\`, \`plaafp_behavioral\`, \`accommodations\`, \`modifications\`, \`goals_counseling\`, \`goals_mathematics\`, \`goals_ela\`, \`services\`, \`profile\`, \`placement\`, \`assessments\`. Do not invent sub-keys like \`goals[ELA]\` — use \`goals_ela\` instead.
 2. **Accommodations level the playing field; modifications change the game.** Default to UDL + accommodations. Only suggest modifications when the student's IEP explicitly authorizes lowered standards or alternate content. Modifications come in three flavors: *content* (lower the standard), *process* (how the student accesses the same content — co-teaching, small group, multimodal delivery), and *output* (alternate response mode for the same standard). The IEP's *Classroom Modifications* row authorizes only the flavors it names. Process and output modifications preserve the grade-level standard; content modifications change it. Only the latter authorizes you to lower RI.7.2 or any other listed standard.
 3. **Use the student's named accommodations verbatim.** Pull exact wording from the IEP's accommodations section. Do not invent or substitute.
 4. **PLAAFP gap is the design constraint.** The teacher needs to know exactly how the student's present level compares to the lesson's grade level, and the modifications must close that gap (e.g., a leveled passage written *to the student's current reading level*).
@@ -76,7 +76,9 @@ export function buildGenerateModificationsPrompt(
     fmtSection("PLAAFP — behavioral / social / emotional", iep.sections.plaafp_behavioral),
     fmtSection("Accommodations", iep.sections.accommodations),
     fmtSection("Modifications", iep.sections.modifications),
-    fmtSection("Annual goals", iep.sections.goals),
+    fmtSection("Annual goals — Counseling (goals_counseling)", iep.sections.goals_counseling),
+    fmtSection("Annual goals — Mathematics (goals_mathematics)", iep.sections.goals_mathematics),
+    fmtSection("Annual goals — ELA (goals_ela)", iep.sections.goals_ela),
     fmtSection("Service delivery", iep.sections.services),
     "",
     "---",
@@ -122,8 +124,8 @@ export function buildQuickAccommodationsPrompt(
     "**Behavioral PLAAFP:**",
     iep.sections.plaafp_behavioral,
     "",
-    "**Counseling goal (self-regulation strategy):**",
-    iep.sections.goals.split(/\n\s*Goal Area:/)[1] || iep.sections.goals,
+    "**Counseling goal (self-regulation strategy) — cite as IEP: goals_counseling:**",
+    iep.sections.goals_counseling,
   ].join("\n");
 
   return {

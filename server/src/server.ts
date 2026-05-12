@@ -135,7 +135,7 @@ server.registerResource(
   {
     title: "IEP section",
     description:
-      "Targeted re-read of one IEP section (plaafp_academics, accommodations, goals, services, etc).",
+      "Targeted re-read of one IEP section (plaafp_academics, accommodations, goals_counseling, goals_mathematics, goals_ela, services, etc).",
   },
   async (uri, vars) => {
     if (vars.student_id !== iep.id) throw new Error(`Unknown student_id: ${vars.student_id}`);
@@ -236,6 +236,9 @@ const IEP_SECTION_KEYS = [
   "accommodations",
   "modifications",
   "goals",
+  "goals_counseling",
+  "goals_mathematics",
+  "goals_ela",
   "services",
   "assessments",
   "placement",

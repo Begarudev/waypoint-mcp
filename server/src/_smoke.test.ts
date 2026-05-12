@@ -16,6 +16,9 @@ const IEP_KEYS: IepSectionKey[] = [
   "accommodations",
   "modifications",
   "goals",
+  "goals_counseling",
+  "goals_mathematics",
+  "goals_ela",
   "services",
   "assessments",
   "placement",
@@ -65,6 +68,23 @@ test("goals contains all three goal areas (Counseling, Mathematics, ELA)", () =>
   assert.match(g, /Counseling/);
   assert.match(g, /Mathematics/);
   assert.match(g, /\bELA\b/);
+});
+
+test("goals_counseling targets the counseling self-regulation goal", () => {
+  assert.match(iep.sections.goals_counseling, /Counseling/);
+  assert.match(iep.sections.goals_counseling, /self-regulation|calming strategy/i);
+});
+
+test("goals_mathematics targets multi-step word problems", () => {
+  // pdftotext column wrap inserts newlines inside the phrase.
+  assert.match(iep.sections.goals_mathematics, /multi-step\s+word problems/i);
+});
+
+test("goals_ela targets comprehension of complex texts", () => {
+  // The phrase 'comprehend ... complex texts' is split by table-column whitespace
+  // in the pdftotext dump, so we check the two halves are present.
+  assert.match(iep.sections.goals_ela, /\bcomprehend\b/i);
+  assert.match(iep.sections.goals_ela, /complex texts/i);
 });
 
 test("plaafp_academics names the 3rd-grade reading level", () => {
