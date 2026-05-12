@@ -108,7 +108,11 @@ export function loadIep(): Iep {
       /PRESENT LEVELS OF ACADEMIC ACHIEVEMENT AND FUNCTIONAL PERFORMANCE:\s*\n?\s*BEHAVIORAL/,
       /PRESENT LEVELS OF ACADEMIC ACHIEVEMENT AND FUNCTIONAL PERFORMANCE:\s*\n?\s*COMMUNICATION/
     ),
-    accommodations: slice(raw, /ACCOMMODATIONS AND MODIFICATIONS/, /Modifications:/),
+    accommodations: slice(
+      raw,
+      /Accommodations:\s*List the accommodations/,
+      /Modifications:\s*List the modifications/
+    ),
     modifications: slice(raw, /Modifications:\s*List/, /MEASURABLE ANNUAL GOALS/),
     goals_counseling: slice(
       raw,
