@@ -137,14 +137,16 @@ Marcus is a 9th-grader with SLD-Dyscalculia: strong reader, 5th-grade math, math
 
 `npm run eval` is a deterministic, offline grader for generated packets. It runs entirely without an LLM call — the rubric in `eval/rubric.ts` reuses `lintModificationPacket` (the same engine that backs the `waypoint_lint_packet` MCP tool) as its underlying check engine, then layers on domain checks (verbatim accommodations in §3, leveled passage in §6, cheat-sheet density in §8).
 
+**What this measures — and what it doesn't.** The shipped files under `examples/` are *hand-authored reference exemplars*, not captured model outputs. So `npm run eval` is a **structural regression gate on the reference set**, not a measurement of live model quality. Its purpose is: when someone changes the prompt template, the lint rules, or the citation grammar, the exemplars surface the break before the change ships. To measure the actual model, capture a real run (point Claude Desktop at the server, invoke `/generate_modifications`, save the markdown) and pass that file: `npm run eval -- ./captured-run.md`. The `waypoint_lint_packet` tool exposes the same engine inside the MCP loop so the model can self-check before it returns (see Operative Rule 11 in `prompts.ts`).
+
 Default invocation grades everything under `examples/*.md`; pass paths explicitly to grade arbitrary markdown:
 
 ```
-npm run eval                              # grade examples/*.md
-npm run eval -- path/to/packet.md         # grade specific file(s)
+npm run eval                              # grade examples/*.md (reference exemplars)
+npm run eval -- path/to/packet.md         # grade specific file(s) — e.g. a captured model run
 ```
 
-It grades 9 weighted items across **structure** (sections + ordering, 15%), **citations** (UDL/IEP grammar, density, canonical keys — 26%), and **domain content** (verbatim accommodations, leveled passage, cheat-sheet, overall lint score, and a `dok_ladder_well_formed` structural check that the §5 question ladder has three DOK tiers *and* at least one sentence stem in tier 1 — 34%; weights normalize to 100). The `dok_ladder_well_formed` item is deliberately independent of `lintModificationPacket` so the eval isn't fully self-grading. A packet `passes` if its weighted score ≥ 80 *and* the lint pass reports no errors. Exit code is `0` when every packet passes and `1` otherwise, so CI can gate on a regression. Weights are intentionally conservative — pure prompt-quality regressions surface here before they hit a teacher. A JSON dump of the last run lands at `eval/last-report.json`.
+It grades 9 weighted items across **structure** (sections + ordering, 15%), **citations** (UDL/IEP grammar, density, canonical keys — 26%), and **domain content** (verbatim accommodations, leveled passage, cheat-sheet, overall lint score, and a `dok_ladder_well_formed` structural check that the §5 question ladder has three DOK tiers *and* at least one sentence stem in tier 1 — 34%; weights normalize to 100). The `dok_ladder_well_formed` item is deliberately independent of `lintModificationPacket` so the eval has at least one signal the lint engine doesn't already produce. A packet `passes` if its weighted score ≥ 80 *and* the lint pass reports no errors. Exit code is `0` when every packet passes and `1` otherwise, so CI can gate on a regression. A JSON dump of the last run lands at `eval/last-report.json`.
 
 ---
 
