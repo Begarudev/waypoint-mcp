@@ -3,17 +3,30 @@ import { McpServer, ResourceTemplate } from "@modelcontextprotocol/sdk/server/mc
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { z } from "zod";
 import {
+  listIeps,
+  listLessons,
   loadIep,
   loadLesson,
   udlMarkdown,
+  type Iep,
   type IepSectionKey,
+  type Lesson,
   type LessonSectionKey,
 } from "./data.js";
 import { buildGenerateModificationsPrompt, buildQuickAccommodationsPrompt } from "./prompts.js";
 
-// In a real product these come from a DB. For the challenge we ship one lesson + one student.
-const lesson = loadLesson();
-const iep = loadIep();
+// In a real product these come from a DB. For the challenge we ship a small registry.
+// `loadAll()` materializes registry → in-memory maps so resource/tool/prompt handlers
+// can look up by id without re-parsing per request.
+function loadAll(): { ieps: Map<string, Iep>; lessons: Map<string, Lesson> } {
+  const ieps = new Map<string, Iep>();
+  for (const e of listIeps()) ieps.set(e.student_id, loadIep(e.student_id));
+  const lessons = new Map<string, Lesson>();
+  for (const e of listLessons()) lessons.set(e.lesson_id, loadLesson(e.lesson_id));
+  return { ieps, lessons };
+}
+
+const { ieps, lessons } = loadAll();
 
 const server = new McpServer(
   {
@@ -35,14 +48,12 @@ server.registerResource(
   "lesson",
   new ResourceTemplate("waypoint://lesson/{lesson_id}", {
     list: async () => ({
-      resources: [
-        {
-          uri: `waypoint://lesson/${lesson.id}`,
-          name: `Lesson — ${lesson.title}`,
-          description: `${lesson.subject} ${lesson.grade} • ${lesson.standard} • ${lesson.duration_minutes} min`,
-          mimeType: "text/markdown",
-        },
-      ],
+      resources: Array.from(lessons.values()).map((l) => ({
+        uri: `waypoint://lesson/${l.id}`,
+        name: `Lesson — ${l.title}`,
+        description: `${l.subject} ${l.grade} • ${l.standard} • ${l.duration_minutes} min`,
+        mimeType: "text/markdown",
+      })),
     }),
   }),
   {
@@ -50,13 +61,14 @@ server.registerResource(
     description: "Full text of a curriculum lesson (teacher copy + student materials).",
   },
   async (uri, vars) => {
-    if (vars.lesson_id !== lesson.id) throw new Error(`Unknown lesson_id: ${vars.lesson_id}`);
+    const l = lessons.get(String(vars.lesson_id));
+    if (!l) throw new Error(`Unknown lesson_id: ${vars.lesson_id}`);
     return {
       contents: [
         {
           uri: uri.href,
           mimeType: "text/markdown",
-          text: lesson.raw,
+          text: l.raw,
         },
       ],
     };
@@ -67,11 +79,13 @@ server.registerResource(
   "lesson_section",
   new ResourceTemplate("waypoint://lesson/{lesson_id}/section/{section}", {
     list: async () => ({
-      resources: (Object.keys(lesson.sections) as LessonSectionKey[]).map((s) => ({
-        uri: `waypoint://lesson/${lesson.id}/section/${s}`,
-        name: `Lesson section — ${s}`,
-        mimeType: "text/markdown",
-      })),
+      resources: Array.from(lessons.values()).flatMap((l) =>
+        (Object.keys(l.sections) as LessonSectionKey[]).map((s) => ({
+          uri: `waypoint://lesson/${l.id}/section/${s}`,
+          name: `Lesson section — ${l.id} / ${s}`,
+          mimeType: "text/markdown",
+        }))
+      ),
     }),
   }),
   {
@@ -79,9 +93,10 @@ server.registerResource(
     description: "Targeted re-read of one section of the lesson (overview, reading_passage, etc).",
   },
   async (uri, vars) => {
-    if (vars.lesson_id !== lesson.id) throw new Error(`Unknown lesson_id: ${vars.lesson_id}`);
+    const l = lessons.get(String(vars.lesson_id));
+    if (!l) throw new Error(`Unknown lesson_id: ${vars.lesson_id}`);
     const section = vars.section as LessonSectionKey;
-    const text = lesson.sections[section];
+    const text = l.sections[section];
     if (text === undefined) throw new Error(`Unknown lesson section: ${section}`);
     return {
       contents: [{ uri: uri.href, mimeType: "text/markdown", text }],
@@ -93,14 +108,12 @@ server.registerResource(
   "iep",
   new ResourceTemplate("waypoint://iep/{student_id}", {
     list: async () => ({
-      resources: [
-        {
-          uri: `waypoint://iep/${iep.id}`,
-          name: `IEP — ${iep.student_name}`,
-          description: `Grade ${iep.grade} • Disability: ${iep.disability}`,
-          mimeType: "text/markdown",
-        },
-      ],
+      resources: Array.from(ieps.values()).map((i) => ({
+        uri: `waypoint://iep/${i.id}`,
+        name: `IEP — ${i.student_name}`,
+        description: `Grade ${i.grade} • Disability: ${i.disability}`,
+        mimeType: "text/markdown",
+      })),
     }),
   }),
   {
@@ -108,13 +121,14 @@ server.registerResource(
     description: "Full text of a student's Individualized Education Program.",
   },
   async (uri, vars) => {
-    if (vars.student_id !== iep.id) throw new Error(`Unknown student_id: ${vars.student_id}`);
+    const i = ieps.get(String(vars.student_id));
+    if (!i) throw new Error(`Unknown student_id: ${vars.student_id}`);
     return {
       contents: [
         {
           uri: uri.href,
           mimeType: "text/markdown",
-          text: iep.raw,
+          text: i.raw,
         },
       ],
     };
@@ -125,11 +139,13 @@ server.registerResource(
   "iep_section",
   new ResourceTemplate("waypoint://iep/{student_id}/section/{section}", {
     list: async () => ({
-      resources: (Object.keys(iep.sections) as IepSectionKey[]).map((s) => ({
-        uri: `waypoint://iep/${iep.id}/section/${s}`,
-        name: `IEP section — ${s}`,
-        mimeType: "text/markdown",
-      })),
+      resources: Array.from(ieps.values()).flatMap((i) =>
+        (Object.keys(i.sections) as IepSectionKey[]).map((s) => ({
+          uri: `waypoint://iep/${i.id}/section/${s}`,
+          name: `IEP section — ${i.id} / ${s}`,
+          mimeType: "text/markdown",
+        }))
+      ),
     }),
   }),
   {
@@ -138,9 +154,10 @@ server.registerResource(
       "Targeted re-read of one IEP section (plaafp_academics, accommodations, goals_counseling, goals_mathematics, goals_ela, services, etc).",
   },
   async (uri, vars) => {
-    if (vars.student_id !== iep.id) throw new Error(`Unknown student_id: ${vars.student_id}`);
+    const i = ieps.get(String(vars.student_id));
+    if (!i) throw new Error(`Unknown student_id: ${vars.student_id}`);
     const section = vars.section as IepSectionKey;
-    const text = iep.sections[section];
+    const text = i.sections[section];
     if (text === undefined) throw new Error(`Unknown IEP section: ${section}`);
     return {
       contents: [{ uri: uri.href, mimeType: "text/markdown", text }],
@@ -178,14 +195,12 @@ server.registerTool(
       {
         type: "text",
         text: JSON.stringify(
-          [
-            {
-              student_id: iep.id,
-              name: iep.student_name,
-              grade: iep.grade,
-              disability: iep.disability,
-            },
-          ],
+          Array.from(ieps.values()).map((i) => ({
+            student_id: i.id,
+            name: i.student_name,
+            grade: i.grade,
+            disability: i.disability,
+          })),
           null,
           2
         ),
@@ -208,16 +223,14 @@ server.registerTool(
       {
         type: "text",
         text: JSON.stringify(
-          [
-            {
-              lesson_id: lesson.id,
-              title: lesson.title,
-              subject: lesson.subject,
-              grade: lesson.grade,
-              standard: lesson.standard,
-              duration_minutes: lesson.duration_minutes,
-            },
-          ],
+          Array.from(lessons.values()).map((l) => ({
+            lesson_id: l.id,
+            title: l.title,
+            subject: l.subject,
+            grade: l.grade,
+            standard: l.standard,
+            duration_minutes: l.duration_minutes,
+          })),
           null,
           2
         ),
@@ -260,13 +273,14 @@ server.registerTool(
     annotations: { readOnlyHint: true, idempotentHint: true, openWorldHint: false },
   },
   async ({ student_id, section }) => {
-    if (student_id !== iep.id) {
+    const i = ieps.get(student_id);
+    if (!i) {
       return {
         isError: true,
         content: [{ type: "text", text: `Unknown student_id: ${student_id}` }],
       };
     }
-    const text = iep.sections[section as IepSectionKey];
+    const text = i.sections[section as IepSectionKey];
     return { content: [{ type: "text", text: text || "(section is empty)" }] };
   }
 );
@@ -289,9 +303,11 @@ server.registerPrompt(
     },
   },
   async ({ lesson_id, student_id }) => {
-    if (lesson_id !== lesson.id) throw new Error(`Unknown lesson_id: ${lesson_id}`);
-    if (student_id !== iep.id) throw new Error(`Unknown student_id: ${student_id}`);
-    return buildGenerateModificationsPrompt(lesson, iep, udlMarkdown());
+    const l = lessons.get(lesson_id);
+    if (!l) throw new Error(`Unknown lesson_id: ${lesson_id}`);
+    const i = ieps.get(student_id);
+    if (!i) throw new Error(`Unknown student_id: ${student_id}`);
+    return buildGenerateModificationsPrompt(l, i, udlMarkdown());
   }
 );
 
@@ -311,8 +327,9 @@ server.registerPrompt(
     },
   },
   async ({ student_id, activity_description }) => {
-    if (student_id !== iep.id) throw new Error(`Unknown student_id: ${student_id}`);
-    return buildQuickAccommodationsPrompt(iep, activity_description);
+    const i = ieps.get(student_id);
+    if (!i) throw new Error(`Unknown student_id: ${student_id}`);
+    return buildQuickAccommodationsPrompt(i, activity_description);
   }
 );
 

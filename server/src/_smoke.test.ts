@@ -3,8 +3,8 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { loadIep, loadLesson, udlMarkdown, type IepSectionKey, type LessonSectionKey } from "./data.js";
 
-const iep = loadIep();
-const lesson = loadLesson();
+const iep = loadIep("jasmine-bailey");
+const lesson = loadLesson("community-lowe");
 
 const IEP_KEYS: IepSectionKey[] = [
   "student_info",
@@ -96,4 +96,12 @@ test("UDL markdown lists all nine guidelines 1–9 by number", () => {
   for (let i = 1; i <= 9; i++) {
     assert.match(md, new RegExp(`UDL ${i} `), `expected 'UDL ${i} ' header`);
   }
+});
+
+test("loadIep('does-not-exist') throws a clear error", () => {
+  assert.throws(() => loadIep("does-not-exist"), /Unknown IEP id: "does-not-exist"/);
+});
+
+test("loadLesson('does-not-exist') throws a clear error", () => {
+  assert.throws(() => loadLesson("does-not-exist"), /Unknown lesson id: "does-not-exist"/);
 });

@@ -90,10 +90,21 @@ function assertAllSectionsPopulated(
   }
 }
 
-export function loadIep(): Iep {
-  const raw = readFileSync(join(DATA_DIR, "iep-jasmine.txt"), "utf-8");
+// ─── IEP registry ───────────────────────────────────────────────────────────
 
-  const sections: Record<IepSectionKey, string> = {
+type IepMetadata = Pick<
+  Iep,
+  "student_name" | "grade" | "disability" | "reading_level_summary" | "math_level_summary"
+>;
+
+type IepRegistryEntry = {
+  file: string;
+  parser: (raw: string) => Record<IepSectionKey, string>;
+  metadata: IepMetadata;
+};
+
+function parseJasmineIep(raw: string): Record<IepSectionKey, string> {
+  return {
     student_info: slice(raw, /Administrative Data Sheet/, /STUDENT AND PARENT CONCERNS/),
     concerns: slice(raw, /STUDENT AND PARENT CONCERNS/, /STUDENT AND TEAM VISION/),
     vision: slice(raw, /STUDENT AND TEAM VISION/, /STUDENT PROFILE/),
@@ -137,27 +148,56 @@ export function loadIep(): Iep {
     ),
     placement: slice(raw, /Participation in the General Education Setting/, /SERVICE DELIVERY/),
   };
-
-  assertAllSectionsPopulated("IEP", sections);
-
-  return {
-    id: "jasmine-bailey",
-    student_name: "Jasmine Regina Bailey",
-    grade: "7th",
-    disability: "Health Impairment",
-    reading_level_summary:
-      "Reads at a 3rd-grade level overall (iReady Fall 2025); Informational Text Comprehension at 2nd-grade level. Decodes grade-level words with adequate fluency but struggles with literal and inferential comprehension.",
-    math_level_summary:
-      "Working at a 4th-grade level on iReady; improving multi-digit operations and integer rules; below grade level on multi-step word problems.",
-    sections,
-    raw,
-  };
 }
 
-export function loadLesson(): Lesson {
-  const raw = readFileSync(join(DATA_DIR, "lesson-community.txt"), "utf-8");
+const IEP_REGISTRY: Record<string, IepRegistryEntry> = {
+  "jasmine-bailey": {
+    file: "iep-jasmine.txt",
+    parser: parseJasmineIep,
+    metadata: {
+      student_name: "Jasmine Regina Bailey",
+      grade: "7th",
+      disability: "Health Impairment",
+      reading_level_summary:
+        "Reads at a 3rd-grade level overall (iReady Fall 2025); Informational Text Comprehension at 2nd-grade level. Decodes grade-level words with adequate fluency but struggles with literal and inferential comprehension.",
+      math_level_summary:
+        "Working at a 4th-grade level on iReady; improving multi-digit operations and integer rules; below grade level on multi-step word problems.",
+    },
+  },
+};
 
-  const sections: Record<LessonSectionKey, string> = {
+export function loadIep(id: string): Iep {
+  const entry = IEP_REGISTRY[id];
+  if (!entry) {
+    throw new Error(
+      `Unknown IEP id: "${id}". Known ids: ${Object.keys(IEP_REGISTRY).join(", ")}`
+    );
+  }
+  const raw = readFileSync(join(DATA_DIR, entry.file), "utf-8");
+  const sections = entry.parser(raw);
+  assertAllSectionsPopulated(`IEP[${id}]`, sections);
+  return { id, ...entry.metadata, sections, raw };
+}
+
+export function listIeps(): Array<{ student_id: string } & IepMetadata> {
+  return Object.entries(IEP_REGISTRY).map(([id, e]) => ({
+    student_id: id,
+    ...e.metadata,
+  }));
+}
+
+// ─── Lesson registry ────────────────────────────────────────────────────────
+
+type LessonMetadata = Pick<Lesson, "title" | "subject" | "grade" | "standard" | "duration_minutes">;
+
+type LessonRegistryEntry = {
+  file: string;
+  parser: (raw: string) => Record<LessonSectionKey, string>;
+  metadata: LessonMetadata;
+};
+
+function parseCommunityLowe(raw: string): Record<LessonSectionKey, string> {
+  return {
     overview: slice(raw, /LESSON OVERVIEW/, /Suggested Pacing/),
     pacing: slice(raw, /Suggested Pacing/, /How do I facilitate this lesson\?/),
     facilitation: slice(raw, /How do I facilitate this lesson\?/, /TEACHER COPY/),
@@ -175,19 +215,41 @@ export function loadLesson(): Lesson {
     ),
     student_discussion: slice(raw, /Student-Led Discussion/),
   };
+}
 
-  assertAllSectionsPopulated("Lesson", sections);
+const LESSON_REGISTRY: Record<string, LessonRegistryEntry> = {
+  "community-lowe": {
+    file: "lesson-community.txt",
+    parser: parseCommunityLowe,
+    metadata: {
+      title: "What is 'community' and why is it important?",
+      subject: "ELA",
+      grade: "7th",
+      standard:
+        "RI.7.2 (determine and summarize the central idea of a text and identify the details that develop it)",
+      duration_minutes: 45,
+    },
+  },
+};
 
-  return {
-    id: "community-lowe",
-    title: "What is 'community' and why is it important?",
-    subject: "ELA",
-    grade: "7th",
-    standard: "RI.7.2 (determine and summarize the central idea of a text and identify the details that develop it)",
-    duration_minutes: 45,
-    sections,
-    raw,
-  };
+export function loadLesson(id: string): Lesson {
+  const entry = LESSON_REGISTRY[id];
+  if (!entry) {
+    throw new Error(
+      `Unknown lesson id: "${id}". Known ids: ${Object.keys(LESSON_REGISTRY).join(", ")}`
+    );
+  }
+  const raw = readFileSync(join(DATA_DIR, entry.file), "utf-8");
+  const sections = entry.parser(raw);
+  assertAllSectionsPopulated(`Lesson[${id}]`, sections);
+  return { id, ...entry.metadata, sections, raw };
+}
+
+export function listLessons(): Array<{ lesson_id: string } & LessonMetadata> {
+  return Object.entries(LESSON_REGISTRY).map(([id, e]) => ({
+    lesson_id: id,
+    ...e.metadata,
+  }));
 }
 
 export type UdlCheckpoint = {
