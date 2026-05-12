@@ -101,7 +101,11 @@ These eight sections are the bar for "actionable without further editing" — th
 
 Running `/generate_modifications lesson_id=community-lowe student_id=jasmine-bailey` against the sample lesson (*"What is 'community' and why is it important?"* by Toby Lowe, RI.7.2) and the sample IEP (Jasmine Bailey, 7th-grade, Health Impairment, reading at 3rd-grade level, documented academic-frustration → shutdown pattern) produces the packet at:
 
-📄 **[`examples/jasmine_community_lesson.md`](examples/jasmine_community_lesson.md)**
+📄 **[`examples/jasmine_community_lesson.md`](examples/jasmine_community_lesson.md)** — full eight-section packet from `generate_modifications`.
+
+A second, lighter-weight example shows the in-the-moment `quick_accommodations` flow — a teacher who's about to run a specific activity tomorrow and just needs the 3-2-1 checklist:
+
+📄 **[`examples/jasmine_quick_accommodations.md`](examples/jasmine_quick_accommodations.md)** — short checklist from `quick_accommodations` for an independent informational-text read.
 
 A few things worth noting in that output:
 
