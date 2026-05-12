@@ -107,7 +107,13 @@ A second, lighter-weight example shows the in-the-moment `quick_accommodations` 
 
 📄 **[`examples/jasmine_quick_accommodations.md`](examples/jasmine_quick_accommodations.md)** — short checklist from `quick_accommodations` for an independent informational-text read.
 
-A few things worth noting in that output:
+What to notice in the `quick_accommodations` walkthrough:
+
+- **It's *quick* by construction** — ≤200-word body, 3 sections (top-3 accommodations / 2 micro-mods / 1 watch-for) vs. the full eight-section packet.
+- **The blockquote at the top simulates the slash-command argument** the teacher would type in Claude Desktop (`activity_description`).
+- **Use this** when the teacher is mid-day and needs in-the-moment supports for an activity that's about to run; use `generate_modifications` when planning a whole lesson the night before.
+
+A few things worth noting in the longer `generate_modifications` output:
 
 - **Every modification cites both a CAST 3.0 UDL number and an IEP section.** E.g., "Pre-teach 5 words with a Frayer card *(UDL 2: Language & Symbols, IEP: plaafp_academics)*."
 - **The PLAAFP gap is named explicitly:** "*~9th–10th-grade essay vs. 3rd-grade reader*" — the leveled passage in §6 rewrites paragraph 9 to ~3rd-grade reading level *while preserving RI.7.2*.
