@@ -144,7 +144,7 @@ npm run eval                              # grade examples/*.md
 npm run eval -- path/to/packet.md         # grade specific file(s)
 ```
 
-It grades 8 weighted items across **structure** (sections + ordering, 15%), **citations** (UDL/IEP grammar, density, canonical keys — 30%), and **domain content** (verbatim accommodations, leveled passage, cheat-sheet, overall lint score — 30%; weights normalize to 100). A packet `passes` if its weighted score ≥ 80 *and* the lint pass reports no errors. Exit code is `0` when every packet passes and `1` otherwise, so CI can gate on a regression. Weights are intentionally conservative — pure prompt-quality regressions surface here before they hit a teacher. A JSON dump of the last run lands at `eval/last-report.json`.
+It grades 9 weighted items across **structure** (sections + ordering, 15%), **citations** (UDL/IEP grammar, density, canonical keys — 26%), and **domain content** (verbatim accommodations, leveled passage, cheat-sheet, overall lint score, and a `dok_ladder_well_formed` structural check that the §5 question ladder has three DOK tiers *and* at least one sentence stem in tier 1 — 34%; weights normalize to 100). The `dok_ladder_well_formed` item is deliberately independent of `lintModificationPacket` so the eval isn't fully self-grading. A packet `passes` if its weighted score ≥ 80 *and* the lint pass reports no errors. Exit code is `0` when every packet passes and `1` otherwise, so CI can gate on a regression. Weights are intentionally conservative — pure prompt-quality regressions surface here before they hit a teacher. A JSON dump of the last run lands at `eval/last-report.json`.
 
 ---
 

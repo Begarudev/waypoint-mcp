@@ -56,7 +56,7 @@ export const RUBRIC: RubricItem[] = [
   },
   {
     id: "udl_citation_density",
-    weight: 8,
+    weight: 4,
     description: "At least 8 compliant UDL+IEP citations",
     check: (_p, l) => {
       const n = l.stats.udl_citations;
@@ -80,7 +80,7 @@ export const RUBRIC: RubricItem[] = [
   // ── domain content (30) ───────────────────────────────────────────────────
   {
     id: "verbatim_accommodations",
-    weight: 12,
+    weight: 9,
     description:
       "At least 4 verbatim IEP accommodation phrases appear in §3",
     check: (_p, l) => {
@@ -128,6 +128,53 @@ export const RUBRIC: RubricItem[] = [
     check: (_p, l) => {
       const passed = l.score >= 85;
       return { passed, score: l.score / 100, detail: `lint_score=${l.score}` };
+    },
+  },
+  // ── independent structural-content check (not covered by lint) ────────────
+  {
+    id: "dok_ladder_well_formed",
+    weight: 7,
+    description:
+      "§5 scaffolded question ladder has three DOK tiers AND tier-1 includes at least one sentence stem",
+    check: (p) => {
+      // Extract the §5 body (Scaffolded question ladder → next ## or §6).
+      const sec5 = p.match(
+        /Scaffolded question ladder[\s\S]+?(?=\n##\s|\n###\s+(?:Leveled|Alternative)|\n\d+\.\s+\*?\*?Leveled passage|$)/i
+      );
+      if (!sec5) return { passed: false, score: 0, detail: "§5 not found" };
+      const body = sec5[0];
+      // Look for tier markers. Accept DOK 1/2/3 (any case) or Recall/Apply/Analyze.
+      const hasTier1 = /\bDOK\s*1\b|\bRecall\b/i.test(body);
+      const hasTier2 = /\bDOK\s*2\b|\bApply\b/i.test(body);
+      const hasTier3 = /\bDOK\s*3\b|\bAnalyze\b/i.test(body);
+      const tierCount = [hasTier1, hasTier2, hasTier3].filter(Boolean).length;
+
+      // Extract tier-1 sub-body: from the tier-1 marker to the tier-2 marker
+      // (or end of §5). Use this to verify a sentence stem appears in tier 1.
+      let tier1Body = "";
+      const t1Idx = body.search(/\bDOK\s*1\b|\bRecall\b/i);
+      if (t1Idx !== -1) {
+        const after = body.slice(t1Idx);
+        const t2 = after.search(/\bDOK\s*2\b|\bApply\b/i);
+        tier1Body = t2 === -1 ? after : after.slice(0, t2);
+      }
+      // A sentence stem looks like: three or more underscores in a row,
+      // or the literal phrase "sentence stem"/"sentence frame".
+      const hasStem =
+        /_{3,}/.test(tier1Body) ||
+        /sentence stem|sentence frame/i.test(tier1Body);
+
+      if (tierCount === 3 && hasStem) {
+        return { passed: true, score: 1, detail: "3 tiers + tier-1 stem" };
+      }
+      if (tierCount === 3 && !hasStem) {
+        return { passed: false, score: 0.5, detail: "3 tiers, no tier-1 stem" };
+      }
+      return {
+        passed: false,
+        score: 0,
+        detail: `tiers=${tierCount}, stem=${hasStem}`,
+      };
     },
   },
 ];

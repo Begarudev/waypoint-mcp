@@ -100,6 +100,49 @@ test("grade(packetWithFabricatedUDL) fails with udl_citation_grammar item failin
   assert.equal(grammarItem!.passed, false);
 });
 
+test("dok_ladder_well_formed: 3 tiers + tier-1 stem → score 1.0", () => {
+  const withLadder = compliantMinimalPacket.replace(
+    "## 5. Scaffolded question ladder\n- Q1 (UDL 6.2: Planning, IEP: goals_ela)\n- Q2 (UDL 6.3: Resources, IEP: plaafp_academics)",
+    `## 5. Scaffolded question ladder
+- DOK 1 — Recall: "The central idea is ______." (UDL 6.2: Planning, IEP: goals_ela)
+- DOK 2 — Apply: explain how the author supports the central idea. (UDL 6.3: Resources, IEP: plaafp_academics)
+- DOK 3 — Analyze: evaluate the strongest piece of evidence.`
+  );
+  const r = grade(withLadder, "ladder-full");
+  const item = r.items.find((i) => i.id === "dok_ladder_well_formed");
+  assert.ok(item, "expected dok_ladder_well_formed item");
+  assert.equal(item!.score, 1, `expected 1.0, got ${item!.score} (${item!.detail})`);
+  assert.equal(item!.passed, true);
+});
+
+test("dok_ladder_well_formed: 3 tiers but no tier-1 stem → score 0.5", () => {
+  const noStem = compliantMinimalPacket.replace(
+    "## 5. Scaffolded question ladder\n- Q1 (UDL 6.2: Planning, IEP: goals_ela)\n- Q2 (UDL 6.3: Resources, IEP: plaafp_academics)",
+    `## 5. Scaffolded question ladder
+- DOK 1 — Recall: What is the central idea? (UDL 6.2: Planning, IEP: goals_ela)
+- DOK 2 — Apply: how does the author support it? (UDL 6.3: Resources, IEP: plaafp_academics)
+- DOK 3 — Analyze: evaluate strongest evidence.`
+  );
+  const r = grade(noStem, "ladder-no-stem");
+  const item = r.items.find((i) => i.id === "dok_ladder_well_formed");
+  assert.ok(item);
+  assert.equal(item!.score, 0.5);
+  assert.equal(item!.passed, false);
+});
+
+test("dok_ladder_well_formed: missing tier-3 → score < 1.0", () => {
+  const missingT3 = compliantMinimalPacket.replace(
+    "## 5. Scaffolded question ladder\n- Q1 (UDL 6.2: Planning, IEP: goals_ela)\n- Q2 (UDL 6.3: Resources, IEP: plaafp_academics)",
+    `## 5. Scaffolded question ladder
+- DOK 1 — Recall: "The idea is ______."
+- DOK 2 — Apply: use it.`
+  );
+  const r = grade(missingT3, "ladder-no-t3");
+  const item = r.items.find((i) => i.id === "dok_ladder_well_formed");
+  assert.ok(item);
+  assert.ok(item!.score < 1.0, `expected score < 1.0, got ${item!.score}`);
+});
+
 test("grade(real jasmine_community_lesson.md) scores ≥ 85 and passes", () => {
   const path = resolve(SERVER_ROOT, "examples", "jasmine_community_lesson.md");
   const body = readFileSync(path, "utf8");
