@@ -1,0 +1,15 @@
+# Node
+server/node_modules/
+server/dist/
+server/*.log
+
+# Scratch text extractions of the bundled PDFs (kept locally for inspection,
+# not part of the deliverable — the source PDFs `lesson` and `iep` already
+# ship with the repo, and the parsed copies live in server/data/).
+/lesson.pdf
+/iep.pdf
+/lesson.txt
+/iep.txt
+
+# OS
+.DS_Store
