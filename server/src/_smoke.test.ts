@@ -2,6 +2,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { loadIep, loadLesson, listIeps, listLessons, udlMarkdown, type IepSectionKey, type LessonSectionKey } from "./data.js";
+import { buildGenerateModificationsPrompt } from "./prompts.js";
 
 const iep = loadIep("jasmine-bailey");
 const lesson = loadLesson("community-lowe");
@@ -176,3 +177,17 @@ test("loadIep('does-not-exist') throws a clear error", () => {
 test("loadLesson('does-not-exist') throws a clear error", () => {
   assert.throws(() => loadLesson("does-not-exist"), /Unknown lesson id: "does-not-exist"/);
 });
+
+test("generate_modifications prompt wires in the waypoint_lint_packet self-check", () => {
+  // Regression guard: Rule 11 + the SELF-CHECK PROCEDURE block must instruct
+  // the model to call the lint tool by name. Without this assertion, a future
+  // edit could silently drop the self-check wiring.
+  const prompt = buildGenerateModificationsPrompt(lesson, iep, udlMarkdown());
+  const text = prompt.messages[0].content.text;
+  assert.match(
+    text,
+    /waypoint_lint_packet/,
+    "rendered prompt should mention the waypoint_lint_packet tool"
+  );
+});
+

@@ -18,6 +18,7 @@ OPERATIVE RULES
 8. **Concrete over generic.** "Pre-teach the words *normative*, *narrative*, *archetypes* with a Frayer chart before paragraph 2" — not "consider pre-teaching vocabulary."
 9. **Non-reading lesson fallback.** If the lesson has no extended reading passage, §6 becomes a *parallel scaffolded artifact* — a worked example with the strategy made visible, a structured note template, or a sentence-frame discussion card — appropriate to the lesson's modality. Do not invent a passage to rewrite.
 10. **Pre-check before recommending services or assistive technology.** Before recommending an AT device, an ELL support, or any related service, verify against \`iep.sections.profile\` and \`iep.sections.services\`. If the device/service is not in either, label the recommendation as a *new* recommendation (*not* as already in place).
+11. **Self-check before finalizing.** After emitting the packet, call the \`waypoint_lint_packet\` tool with the full markdown of your packet as the \`packet\` argument. Read the returned report. If \`score < 85\` or any finding has \`severity: "error"\`, revise the packet to address the findings and emit the corrected version. Repeat **at most once** (i.e., at most one revision pass). On the second emission, include a brief one-line note above the packet: \`> Self-check: revised from initial lint score X to Y.\`
 
 OUTPUT FORMAT
 Produce markdown with **exactly** these eight numbered sections, in this order, with these headings:
@@ -31,7 +32,10 @@ Produce markdown with **exactly** these eight numbered sections, in this order, 
 7. **Alternative assessment** — same standard, different expression mode. Tie it explicitly to one of the student's annual goals so the activity doubles as progress monitoring.
 8. **Teacher cheat-sheet** — 5 bullets the teacher can paste straight into their lesson plan: when to chunk, when to check in, what to have pre-printed, what to listen for, how to redirect if shutdown begins.
 
-If a section genuinely doesn't apply (e.g., the lesson has no reading passage), write the heading and a one-line note explaining why it's omitted. Do not invent content.`;
+If a section genuinely doesn't apply (e.g., the lesson has no reading passage), write the heading and a one-line note explaining why it's omitted. Do not invent content.
+
+SELF-CHECK PROCEDURE
+After producing the packet, run a single auditable self-check pass: invoke the \`waypoint_lint_packet\` tool with the full markdown of your packet as the \`packet\` argument. The tool returns a structured report with a 0–100 \`score\`, a list of \`findings\` (each with \`rule\`, \`severity\`, \`message\`), and section/citation statistics. If the report shows \`score < 85\` or any \`severity: "error"\` finding, revise the packet to address the findings and emit the corrected version. Limit yourself to **one** revision pass; on the second emission, prepend a one-line note: \`> Self-check: revised from initial lint score X to Y.\` This lint report is auditable, not opaque — the rules it enforces are exactly the ones above (sections present and ordered, canonical citation grammar, valid IEP keys, citation density, verbatim accommodations).`;
 
 function fmtSection(label: string, body: string): string {
   return `\n\n### ${label}\n\n${body.trim()}`;

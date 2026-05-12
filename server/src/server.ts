@@ -39,7 +39,8 @@ const server = new McpServer(
     instructions:
       "Waypoint helps a teacher differentiate a lesson for a student with an IEP. " +
       "Two prompts: `generate_modifications` (full lesson-plan-grade packet from a lesson_id + student_id — use when planning a whole lesson) and `quick_accommodations` (lightweight in-the-moment checklist from a student_id + a one-sentence activity description — use when the teacher needs accommodations for an activity they're about to run). " +
-      "Both prompts auto-load the relevant IEP sections + a CAST UDL 3.0 reference; the model does the reasoning.",
+      "Both prompts auto-load the relevant IEP sections + a CAST UDL 3.0 reference; the model does the reasoning. " +
+      "`generate_modifications` instructs the model to self-check its output by calling `waypoint_lint_packet` and, if the lint score < 85 or any error finding is present, emitting one revised version.",
   }
 );
 
@@ -317,7 +318,7 @@ server.registerPrompt(
   {
     title: "Differentiate this lesson for this student",
     description:
-      "The canonical Waypoint workflow. Given a lesson_id and a student_id, produces a structured packet of UDL-aligned modifications, scaffolded questions, a leveled passage, and an alternative assessment — grounded in both the lesson and the student's IEP.",
+      "The canonical Waypoint workflow. Given a lesson_id and a student_id, produces a self-checked packet of UDL-aligned modifications, scaffolded questions, a leveled passage, and an alternative assessment — grounded in both the lesson and the student's IEP. The prompt directs the model to audit its own output via `waypoint_lint_packet` and revise once if needed.",
     argsSchema: {
       lesson_id: z
         .string()
