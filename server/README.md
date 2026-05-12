@@ -50,7 +50,7 @@ The single most consequential decision in this project was **how to split work b
 The Anthropic / `modelcontextprotocol.io` guidance — *"prompts orchestrate, resources supply context, tools perform actions"* — maps cleanly onto this domain:
 
 - **The lesson and the IEP are Resources, not search results.** They are bounded, human-authored documents. A meaningful modification depends on cross-section coherence — a goal in §3 changes how to interpret an accommodation in §5. Putting them behind a search/RAG tool would let the model retrieve fragments and miss the whole picture. Both documents fit comfortably in Claude's context, so I expose them in full.
-- **The IEP is also exposed as named sub-resources** (`plaafp_academics`, `accommodations`, `goals`, `services`, …). This is for *targeted re-read*, not retrieval. After Claude has read the whole IEP once, it can grab a specific section cheaply if it needs to double-check before recommending an accommodation.
+- **The IEP is also exposed as named sub-resources** (`plaafp_academics`, `accommodations`, `goals_ela`, `goals_mathematics`, `goals_counseling`, `services`, …). This is for *targeted re-read*, not retrieval. After Claude has read the whole IEP once, it can grab a specific section cheaply if it needs to double-check before recommending an accommodation.
 - **A curated CAST UDL 3.0 reference is exposed as a Resource** (`waypoint://framework/udl`). This is the small grounding move that turns "consider scaffolding" into "pre-teach *narrative, archetype, normative* with a Frayer card (UDL 2.1: Clarify vocabulary, symbols, and language structures)." Every modification in the output cites a real CAST 3.0 guideline or checkpoint number, which is how Goalbook-style products achieve "grounded, not generic."
 - **The differentiation workflow is a Prompt, not a Tool.** Putting the reasoning scaffold inside a prompt template (a) makes it user-discoverable as a slash command, (b) keeps the eight-section output contract versionable in source, (c) avoids hiding orchestration logic inside a tool handler. The prompt template pre-wires which resources to load, sets the operative rules, and enforces the output schema.
 - **Tools are small and read-only** — list students, list lessons, fetch one IEP section. They exist to bootstrap the workflow (so Claude can answer "what students do you have IEPs for?") and to support targeted re-reads. Following Anthropic's *Writing tools for agents* guidance: service-prefixed (`waypoint_*`), snake_case, action-first verbs, narrow descriptions, `readOnlyHint: true` annotations.
@@ -131,15 +131,16 @@ server/
 ├── tsconfig.json
 ├── README.md             # this file
 ├── examples/
-│   └── jasmine_community_lesson.md     # sample output from generate_modifications
+│   ├── jasmine_community_lesson.md       # sample output from generate_modifications
+│   └── jasmine_quick_accommodations.md   # sample output from quick_accommodations
 ├── data/
-│   ├── lesson-community.txt            # pdftotext extraction of root /lesson
-│   └── iep-jasmine.txt                 # pdftotext extraction of root /iep
+│   ├── lesson-community.txt              # pdftotext extraction of root /lesson
+│   └── iep-jasmine.txt                   # pdftotext extraction of root /iep
 └── src/
     ├── server.ts         # MCP server entry: resources + tools + prompts + stdio
-    ├── data.ts           # lesson/IEP loaders + section splitters + UDL reference
+    ├── data.ts           # lesson/IEP registry + section splitters + UDL reference
     ├── prompts.ts        # generate_modifications + quick_accommodations templates
-    └── _smoke.ts         # data-layer smoke test
+    └── _smoke.test.ts    # node:test suite (run via `npm test`)
 ```
 
 ---
