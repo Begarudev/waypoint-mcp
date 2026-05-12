@@ -1,9 +1,38 @@
-import { readFileSync } from "node:fs";
+import { readFileSync, existsSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
+import pdfParse from "pdf-parse";
 
 const here = dirname(fileURLToPath(import.meta.url));
-const DATA_DIR = join(here, "..", "data");
+// Repo root holds the canonical PDF artifacts shipped with the challenge
+// (`<repo>/iep`, `<repo>/lesson`). The compiled server lives at
+// `<repo>/server/dist/`, so the repo root is two levels up.
+const REPO_ROOT = join(here, "..", "..");
+
+// ─── PDF loader ─────────────────────────────────────────────────────────────
+// Source of truth for IEP / lesson text is the PDF bundled at the repo root
+// (`<repo>/iep`, `<repo>/lesson` — extensionless, but PDF documents). The
+// `server/data/*.txt` files were a prior `pdftotext -layout` dump kept around
+// for human inspection only; the server no longer reads them at runtime.
+// If you regenerate them via `pdftotext -layout`, treat the output as a
+// reference artifact, not as the canonical input.
+
+async function loadPdfText(absPath: string): Promise<string> {
+  if (!existsSync(absPath)) {
+    throw new Error(
+      `PDF source not found at ${absPath}. The Waypoint server expects ` +
+        `the bundled PDFs at the repo root (\`<repo>/iep\`, \`<repo>/lesson\`).`
+    );
+  }
+  const buf = readFileSync(absPath);
+  const result = await pdfParse(buf);
+  // pdf-parse occasionally emits runs of trailing spaces before line breaks
+  // and zero-width artefacts; normalize trailing whitespace so the section
+  // splitter regexes (which were written against `pdftotext -layout` output)
+  // line up. We deliberately do NOT collapse internal whitespace — the
+  // splitter relies on column-wrap newlines as separators.
+  return result.text.replace(/[ \t]+\n/g, "\n");
+}
 
 export type IepSectionKey =
   | "student_info"
@@ -98,7 +127,8 @@ type IepMetadata = Pick<
 >;
 
 type IepRegistryEntry = {
-  file: string;
+  /** Absolute path to the source PDF for this IEP. */
+  pdfPath: string;
   parser: (raw: string) => Record<IepSectionKey, string>;
   metadata: IepMetadata;
 };
@@ -152,7 +182,7 @@ function parseJasmineIep(raw: string): Record<IepSectionKey, string> {
 
 const IEP_REGISTRY: Record<string, IepRegistryEntry> = {
   "jasmine-bailey": {
-    file: "iep-jasmine.txt",
+    pdfPath: join(REPO_ROOT, "iep"),
     parser: parseJasmineIep,
     metadata: {
       student_name: "Jasmine Regina Bailey",
@@ -166,6 +196,12 @@ const IEP_REGISTRY: Record<string, IepRegistryEntry> = {
   },
 };
 
+// Pre-extracted PDF text, populated by the top-level await below. Keyed by
+// IEP id. Splitting the parse step (async, I/O-bound) from `loadIep`
+// (sync, called from hot paths and tests) lets callers keep a synchronous
+// API while the PDFs are still the runtime source of truth.
+const IEP_RAW_CACHE: Map<string, string> = new Map();
+
 export function loadIep(id: string): Iep {
   const entry = IEP_REGISTRY[id];
   if (!entry) {
@@ -173,7 +209,13 @@ export function loadIep(id: string): Iep {
       `Unknown IEP id: "${id}". Known ids: ${Object.keys(IEP_REGISTRY).join(", ")}`
     );
   }
-  const raw = readFileSync(join(DATA_DIR, entry.file), "utf-8");
+  const raw = IEP_RAW_CACHE.get(id);
+  if (raw === undefined) {
+    throw new Error(
+      `IEP[${id}] PDF text not loaded. This indicates the module-level ` +
+        `PDF ingest failed; check the startup logs.`
+    );
+  }
   const sections = entry.parser(raw);
   assertAllSectionsPopulated(`IEP[${id}]`, sections);
   return { id, ...entry.metadata, sections, raw };
@@ -191,7 +233,8 @@ export function listIeps(): Array<{ student_id: string } & IepMetadata> {
 type LessonMetadata = Pick<Lesson, "title" | "subject" | "grade" | "standard" | "duration_minutes">;
 
 type LessonRegistryEntry = {
-  file: string;
+  /** Absolute path to the source PDF for this lesson. */
+  pdfPath: string;
   parser: (raw: string) => Record<LessonSectionKey, string>;
   metadata: LessonMetadata;
 };
@@ -219,7 +262,7 @@ function parseCommunityLowe(raw: string): Record<LessonSectionKey, string> {
 
 const LESSON_REGISTRY: Record<string, LessonRegistryEntry> = {
   "community-lowe": {
-    file: "lesson-community.txt",
+    pdfPath: join(REPO_ROOT, "lesson"),
     parser: parseCommunityLowe,
     metadata: {
       title: "What is 'community' and why is it important?",
@@ -235,6 +278,22 @@ const LESSON_REGISTRY: Record<string, LessonRegistryEntry> = {
   },
 };
 
+const LESSON_RAW_CACHE: Map<string, string> = new Map();
+
+// ─── Module-level PDF ingest ────────────────────────────────────────────────
+// Resolved at import time via top-level await. All consumers of this module
+// (server.ts, _smoke.test.ts) therefore see fully-populated caches by the
+// time their own top-level code runs. Failures here propagate as module
+// initialization errors — exactly the behavior we want if a PDF is missing.
+await Promise.all([
+  ...Object.entries(IEP_REGISTRY).map(async ([id, entry]) => {
+    IEP_RAW_CACHE.set(id, await loadPdfText(entry.pdfPath));
+  }),
+  ...Object.entries(LESSON_REGISTRY).map(async ([id, entry]) => {
+    LESSON_RAW_CACHE.set(id, await loadPdfText(entry.pdfPath));
+  }),
+]);
+
 export function loadLesson(id: string): Lesson {
   const entry = LESSON_REGISTRY[id];
   if (!entry) {
@@ -242,7 +301,13 @@ export function loadLesson(id: string): Lesson {
       `Unknown lesson id: "${id}". Known ids: ${Object.keys(LESSON_REGISTRY).join(", ")}`
     );
   }
-  const raw = readFileSync(join(DATA_DIR, entry.file), "utf-8");
+  const raw = LESSON_RAW_CACHE.get(id);
+  if (raw === undefined) {
+    throw new Error(
+      `Lesson[${id}] PDF text not loaded. This indicates the module-level ` +
+        `PDF ingest failed; check the startup logs.`
+    );
+  }
   const sections = entry.parser(raw);
   assertAllSectionsPopulated(`Lesson[${id}]`, sections);
   return { id, ...entry.metadata, sections, raw };
