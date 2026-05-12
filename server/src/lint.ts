@@ -176,24 +176,33 @@ export function lintModificationPacket(markdown: string): LintReport {
   const compliantMatches = markdown.match(compliantRe) ?? [];
   const udlCitations = compliantMatches.length;
 
-  // ── §5: IEP citation grammar (any `IEP: <key>` not in valid set) ───────
-  // Match `IEP: ` followed by a non-whitespace, non-`)`, non-`,` token —
-  // so `goals[ELA]` and `goals.ela` get caught, not just clean keys.
-  const iepCitationRe = /IEP:\s*([^\s),]+)/g;
+  // ── §5: IEP citation grammar — scoped to the canonical citation tuple ──
+  // Only validate IEP keys that appear inside the canonical
+  // `(UDL <num>: <title>, IEP: <key>[; <key>|+ <key>]...)` form. Prose
+  // mentions of "IEP: services" outside parentheses are NOT validated, to
+  // avoid false-positives on natural language.
+  //
+  // Multi-key citations are allowed (separated by `;` or `+`); each token
+  // must be a valid key.
+  const iepInCitationRe = /\(UDL [^,)]+,\s*IEP:\s*([^),]+)\)/g;
   let iepCitations = 0;
-  let iepMatch: RegExpExecArray | null;
-  while ((iepMatch = iepCitationRe.exec(markdown)) !== null) {
-    iepCitations++;
-    const key = iepMatch[1];
-    if (!VALID_IEP_KEYS.has(key)) {
-      findings.push({
-        rule: "iep-citation-grammar",
-        severity: "error",
-        message: `Invalid IEP section key: "${key}". Valid keys: ${[
-          ...VALID_IEP_KEYS,
-        ].join(", ")}.`,
-        location: iepMatch[0],
-      });
+  let citationMatch: RegExpExecArray | null;
+  while ((citationMatch = iepInCitationRe.exec(markdown)) !== null) {
+    const rawKeys = citationMatch[1];
+    // Split on `;` or `+` (with optional surrounding spaces).
+    const keys = rawKeys.split(/\s*[;+]\s*/).map((k) => k.trim()).filter(Boolean);
+    for (const key of keys) {
+      iepCitations++;
+      if (!VALID_IEP_KEYS.has(key)) {
+        findings.push({
+          rule: "iep-citation-grammar",
+          severity: "error",
+          message: `Invalid IEP section key: "${key}". Valid keys: ${[
+            ...VALID_IEP_KEYS,
+          ].join(", ")}.`,
+          location: citationMatch[0],
+        });
+      }
     }
   }
 

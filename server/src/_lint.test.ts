@@ -157,6 +157,45 @@ test("regression: the shipped jasmine_community_lesson.md scores ≥ 85 with no 
   assert.equal(r.ok, true);
 });
 
+test("prose 'IEP: services' outside a citation tuple does NOT trigger iep-citation-grammar", () => {
+  // The phrase "see also IEP: services" in prose used to false-positive
+  // because the old regex matched any `IEP: <token>` anywhere. After
+  // scoping to canonical `(UDL ..., IEP: <key>)`, prose is exempt.
+  const md =
+    MINIMAL_COMPLIANT +
+    "\n\nFollow up: see also IEP: services and the profile section for additional context.\n";
+  const r = lintModificationPacket(md);
+  const grammar = r.findings.filter((f) => f.rule === "iep-citation-grammar");
+  assert.deepEqual(
+    grammar,
+    [],
+    `expected no iep-citation-grammar findings for prose mention, got: ${JSON.stringify(grammar)}`
+  );
+});
+
+test("multi-key IEP citation with `;` separator is accepted when all keys are valid", () => {
+  const md =
+    MINIMAL_COMPLIANT +
+    "\n- bonus mod *(UDL 8.2: Differentiate feedback, IEP: goals_mathematics; goals_counseling)*\n";
+  const r = lintModificationPacket(md);
+  const grammar = r.findings.filter((f) => f.rule === "iep-citation-grammar");
+  assert.deepEqual(
+    grammar,
+    [],
+    `multi-key citation should be accepted, got: ${JSON.stringify(grammar)}`
+  );
+});
+
+test("multi-key IEP citation with `+` separator is accepted; invalid sub-key still flagged", () => {
+  const md =
+    MINIMAL_COMPLIANT +
+    "\n- bonus *(UDL 8.2: foo, IEP: goals_mathematics + nope_invalid)*\n";
+  const r = lintModificationPacket(md);
+  const grammar = r.findings.filter((f) => f.rule === "iep-citation-grammar");
+  assert.equal(grammar.length, 1, "expected one finding for the invalid sub-key");
+  assert.match(grammar[0].message, /nope_invalid/);
+});
+
 test("stats: word_count is whitespace-split, non-empty token count", () => {
   const r = lintModificationPacket("hello world  foo\n\nbar");
   assert.equal(r.stats.word_count, 4);
