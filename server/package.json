@@ -11,7 +11,7 @@
     "build": "tsc",
     "start": "node dist/server.js",
     "dev": "tsc --watch",
-    "test": "npm run build && node --test dist/_smoke.test.js"
+    "test": "npm run build && node --test dist/_smoke.test.js dist/_lint.test.js"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.0.4",

@@ -14,6 +14,7 @@ import {
   type LessonSectionKey,
 } from "./data.js";
 import { buildGenerateModificationsPrompt, buildQuickAccommodationsPrompt } from "./prompts.js";
+import { lintModificationPacket } from "./lint.js";
 
 // In a real product these come from a DB. For the challenge we ship a small registry.
 // `loadAll()` materializes registry → in-memory maps so resource/tool/prompt handlers
@@ -283,6 +284,29 @@ server.registerTool(
     }
     const text = i.sections[section as IepSectionKey];
     return { content: [{ type: "text", text: text || "(section is empty)" }] };
+  }
+);
+
+server.registerTool(
+  "waypoint_lint_packet",
+  {
+    title: "Lint a generated modification packet",
+    description:
+      "Lint a modification packet against the operative rules: required sections present, UDL citation grammar compliance, IEP section-key validity, citation density, verbatim-accommodation use. Returns a structured report with a 0–100 score.",
+    inputSchema: {
+      packet: z
+        .string()
+        .describe(
+          "The full markdown modification packet to audit (the output of generate_modifications)."
+        ),
+    },
+    annotations: { readOnlyHint: true, idempotentHint: true, openWorldHint: false },
+  },
+  async ({ packet }) => {
+    const report = lintModificationPacket(packet);
+    return {
+      content: [{ type: "text", text: JSON.stringify(report, null, 2) }],
+    };
   }
 );
 

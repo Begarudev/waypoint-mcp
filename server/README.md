@@ -29,7 +29,7 @@ To wire it into Claude Desktop, add to `~/Library/Application Support/Claude/cla
 ```
 
 Restart Claude Desktop and you should see:
-- **Tools** — `waypoint_list_students`, `waypoint_list_lessons`, `waypoint_get_iep_section`
+- **Tools** — `waypoint_list_students`, `waypoint_list_lessons`, `waypoint_get_iep_section`, `waypoint_lint_packet`
 - **Resources** — the lesson, the IEP, the UDL framework reference
 - **Slash commands** — `/generate_modifications`, `/quick_accommodations`
 
@@ -53,7 +53,7 @@ The Anthropic / `modelcontextprotocol.io` guidance — *"prompts orchestrate, re
 - **The IEP is also exposed as named sub-resources** (`plaafp_academics`, `accommodations`, `goals_ela`, `goals_mathematics`, `goals_counseling`, `services`, …). This is for *targeted re-read*, not retrieval. After Claude has read the whole IEP once, it can grab a specific section cheaply if it needs to double-check before recommending an accommodation.
 - **A curated CAST UDL 3.0 reference is exposed as a Resource** (`waypoint://framework/udl`). This is the small grounding move that turns "consider scaffolding" into "pre-teach *narrative, archetype, normative* with a Frayer card (UDL 2.1: Clarify vocabulary, symbols, and language structures)." Every modification in the output cites a real CAST 3.0 guideline or checkpoint number, which is how Goalbook-style products achieve "grounded, not generic."
 - **The differentiation workflow is a Prompt, not a Tool.** Putting the reasoning scaffold inside a prompt template (a) makes it user-discoverable as a slash command, (b) keeps the eight-section output contract versionable in source, (c) avoids hiding orchestration logic inside a tool handler. The prompt template pre-wires which resources to load, sets the operative rules, and enforces the output schema.
-- **Tools are small and read-only** — list students, list lessons, fetch one IEP section. They exist to bootstrap the workflow (so Claude can answer "what students do you have IEPs for?") and to support targeted re-reads. Following Anthropic's *Writing tools for agents* guidance: service-prefixed (`waypoint_*`), snake_case, action-first verbs, narrow descriptions, `readOnlyHint: true` annotations.
+- **Tools are small and read-only** — list students, list lessons, fetch one IEP section. They exist to bootstrap the workflow (so Claude can answer "what students do you have IEPs for?") and to support targeted re-reads. Following Anthropic's *Writing tools for agents* guidance: service-prefixed (`waypoint_*`), snake_case, action-first verbs, narrow descriptions, `readOnlyHint: true` annotations. Plus `waypoint_lint_packet(packet)` — a self-eval tool that takes a generated packet and reports a 0–100 score, missing sections, bad citations, and verbatim-accommodation coverage. Useful for closed-loop quality gates or for the model to self-check before returning.
 
 What I deliberately **didn't** build:
 - **No RAG.** With one bounded IEP and one bounded lesson, retrieval is strictly worse than full context.
