@@ -52,9 +52,13 @@ const VALID_IEP_KEYS = new Set([
   "assessments",
 ]);
 
-// Known verbatim accommodation phrases for Jasmine. Hand-curated; the
-// second-student agent will generalize this when more students land.
+// Common IEP accommodation phrases the lint tool looks for in §3 to validate
+// the "use the student's named accommodations verbatim" operative rule.
+// Intentionally student-agnostic: includes phrases that appear across the
+// shipped fixtures (Jasmine, Marcus) and common IEP boilerplate beyond.
+// Matching is case-insensitive (see countVerbatimAccommodations below).
 const VERBATIM_ACCOMMODATION_PHRASES = [
+  // Jasmine (Health Impairment)
   "Repeat directions",
   "Reminders to pause, plan, proceed",
   "1:1 check ins",
@@ -62,6 +66,22 @@ const VERBATIM_ACCOMMODATION_PHRASES = [
   "Frequent breaks",
   "graphic organizers and checklists",
   "Small group",
+  "Copy of teacher's notes",
+  "Reminder to remain engaged",
+  // Marcus (SLD/Dyscalculia)
+  "chunked math problems",
+  "color-coded operation cues",
+  "worked examples in margin",
+  "math reference sheet",
+  "graph paper",
+  "verbal response option",
+  "extended time",
+  "frequent supervised breaks",
+  // Generic / cross-IEP
+  "preferential seating",
+  "scheduled breaks",
+  "sentence frames",
+  "text-to-speech",
 ];
 
 function findSectionLine(markdown: string, sectionName: string): number {
@@ -203,8 +223,9 @@ export function lintModificationPacket(markdown: string): LintReport {
     acc3Body = lines.slice(acc3StartLine - 1, endIdx - 1).join("\n");
   }
   let verbatimHits = 0;
+  const acc3Lower = acc3Body.toLowerCase();
   for (const phrase of VERBATIM_ACCOMMODATION_PHRASES) {
-    if (acc3Body.includes(phrase)) verbatimHits++;
+    if (acc3Lower.includes(phrase.toLowerCase())) verbatimHits++;
   }
   if (verbatimHits === 0) {
     findings.push({
