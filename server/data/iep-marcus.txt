@@ -398,6 +398,10 @@ and functional performance.
    - Extended time (1.5×) on all math assessments
    - Frequent supervised breaks during math blocks longer than 30 minutes
    - Time-budget cue card on his desk for each math chunk ("you have 8 minutes for problems 1-2")
+   - Math problem sets reduced to 50% of the grade-level item count (workload
+     accommodation: same standard, same rubric, fewer items). Problems are
+     selected to span the complexity range so that the reduced set still
+     assesses the full standard.
  Setting
    - Small group for math (daily co-taught block — primary math placement)
    - Preferential seating near the co-teacher in math
@@ -407,12 +411,15 @@ Modifications: List the modifications, if any, that are needed to the student's 
 effective progress, and access the general curriculum.
 
 
- Math problem sets are reduced to 50% of the grade-level count, with the same standard targeted on the
- problems Marcus does receive. Problems are selected to span the complexity range so that the reduced
- set still assesses the full standard. This is a *process* modification: same standard, fewer items.
+ Process modification — Multimodal delivery of math content: when introducing a new math concept,
+ the teacher pairs verbal explanation with a visual (manipulative, diagram, or fraction strips) and
+ a written worked example, so that Marcus can access the same grade-level content through more than
+ one representational channel. This does not lower the standard.
 
  No content modifications are authorized. Marcus is held to grade-level standards in ELA, History,
- Science, and Math (with the item-count reduction above for math).
+ Science, and Math. (Note: the 50%-item-count reduction on math problem sets is a *workload
+ accommodation* — same standard, same rubric, fewer items — and is listed in the Accommodations
+ table above under Timing/Scheduling, not here.)
  Individualized Education           Student Name: Marcus               ID: 41728MCN              Grade: Ninth
  Program                            Chen                                                          grade
 
