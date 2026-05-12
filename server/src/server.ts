@@ -24,8 +24,8 @@ const server = new McpServer(
     capabilities: { resources: {}, tools: {}, prompts: {} },
     instructions:
       "Waypoint helps a teacher differentiate a lesson for a student with an IEP. " +
-      "Workflow: invoke the `generate_modifications` prompt with a lesson_id and student_id. " +
-      "The prompt loads the lesson + IEP + UDL reference and emits a structured modification packet.",
+      "Two prompts: `generate_modifications` (full lesson-plan-grade packet from a lesson_id + student_id — use when planning a whole lesson) and `quick_accommodations` (lightweight in-the-moment checklist from a student_id + a one-sentence activity description — use when the teacher needs accommodations for an activity they're about to run). " +
+      "Both prompts auto-load the relevant IEP sections + a CAST UDL 3.0 reference; the model does the reasoning.",
   }
 );
 
