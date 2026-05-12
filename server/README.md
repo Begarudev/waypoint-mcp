@@ -133,6 +133,21 @@ Marcus is a 9th-grader with SLD-Dyscalculia: strong reader, 5th-grade math, math
 
 ---
 
+## Eval harness
+
+`npm run eval` is a deterministic, offline grader for generated packets. It runs entirely without an LLM call — the rubric in `eval/rubric.ts` reuses `lintModificationPacket` (the same engine that backs the `waypoint_lint_packet` MCP tool) as its underlying check engine, then layers on domain checks (verbatim accommodations in §3, leveled passage in §6, cheat-sheet density in §8).
+
+Default invocation grades everything under `examples/*.md`; pass paths explicitly to grade arbitrary markdown:
+
+```
+npm run eval                              # grade examples/*.md
+npm run eval -- path/to/packet.md         # grade specific file(s)
+```
+
+It grades 8 weighted items across **structure** (sections + ordering, 15%), **citations** (UDL/IEP grammar, density, canonical keys — 30%), and **domain content** (verbatim accommodations, leveled passage, cheat-sheet, overall lint score — 30%; weights normalize to 100). A packet `passes` if its weighted score ≥ 80 *and* the lint pass reports no errors. Exit code is `0` when every packet passes and `1` otherwise, so CI can gate on a regression. Weights are intentionally conservative — pure prompt-quality regressions surface here before they hit a teacher. A JSON dump of the last run lands at `eval/last-report.json`.
+
+---
+
 ## Repo layout
 
 ```
@@ -149,11 +164,18 @@ server/
 │   ├── iep-jasmine.txt                   # pdftotext extraction of root /iep
 │   ├── iep-marcus.txt                    # synthetic IEP fixture (SLD-Dyscalculia)
 │   └── lesson-fractions.txt              # synthetic math-lesson fixture (5.NF.A.1, no reading passage)
+├── eval/
+│   ├── rubric.ts            # weighted rubric on top of lintModificationPacket
+│   ├── run.ts               # CLI entrypoint: `npm run eval`
+│   ├── tsconfig.json        # secondary TS project for the eval bundle
+│   └── _rubric.test.ts      # node:test suite for the rubric
 └── src/
-    ├── server.ts         # MCP server entry: resources + tools + prompts + stdio
-    ├── data.ts           # lesson/IEP registry + section splitters + UDL reference
-    ├── prompts.ts        # generate_modifications + quick_accommodations templates
-    └── _smoke.test.ts    # node:test suite (run via `npm test`)
+    ├── server.ts            # MCP server entry: resources + tools + prompts + stdio
+    ├── data.ts              # lesson/IEP registry + section splitters + UDL reference
+    ├── prompts.ts           # generate_modifications + quick_accommodations templates
+    ├── lint.ts              # packet linter (used by the lint tool + eval harness)
+    ├── _lint.test.ts        # node:test suite for the linter
+    └── _smoke.test.ts       # node:test suite for the data layer
 ```
 
 ---

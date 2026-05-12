@@ -8,10 +8,11 @@
     "waypoint-mcp": "dist/server.js"
   },
   "scripts": {
-    "build": "tsc",
+    "build": "tsc && tsc -p eval/tsconfig.json",
     "start": "node dist/server.js",
     "dev": "tsc --watch",
-    "test": "npm run build && node --test dist/_smoke.test.js dist/_lint.test.js"
+    "test": "npm run build && node --test dist/_smoke.test.js dist/_lint.test.js dist/eval/_rubric.test.js",
+    "eval": "npm run build && node dist/eval/run.js"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.0.4",
