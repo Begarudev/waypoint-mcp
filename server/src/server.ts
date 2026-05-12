@@ -154,7 +154,7 @@ server.registerResource(
   {
     title: "CAST UDL Guidelines 3.0 (curated)",
     description:
-      "Curated reference to CAST's Universal Design for Learning Guidelines (3.0). Cite guideline IDs (e.g., Representation.G2) when justifying a modification.",
+      "Curated reference to CAST's Universal Design for Learning Guidelines (3.0). Cite guideline/checkpoint numbers (e.g. `UDL 7.1 (Optimize choice and autonomy)` or `UDL 2 (Language & Symbols)`) when justifying a modification.",
     mimeType: "text/markdown",
   },
   async (uri) => ({

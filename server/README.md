@@ -51,7 +51,7 @@ The Anthropic / `modelcontextprotocol.io` guidance — *"prompts orchestrate, re
 
 - **The lesson and the IEP are Resources, not search results.** They are bounded, human-authored documents. A meaningful modification depends on cross-section coherence — a goal in §3 changes how to interpret an accommodation in §5. Putting them behind a search/RAG tool would let the model retrieve fragments and miss the whole picture. Both documents fit comfortably in Claude's context, so I expose them in full.
 - **The IEP is also exposed as named sub-resources** (`plaafp_academics`, `accommodations`, `goals`, `services`, …). This is for *targeted re-read*, not retrieval. After Claude has read the whole IEP once, it can grab a specific section cheaply if it needs to double-check before recommending an accommodation.
-- **A curated CAST UDL 3.0 reference is exposed as a Resource** (`waypoint://framework/udl`). This is the small grounding move that turns "consider scaffolding" into "pre-teach *narrative, archetype, normative* with a Frayer card (Representation.G2)." Every modification in the output cites a UDL guideline id, which is how Goalbook-style products achieve "grounded, not generic."
+- **A curated CAST UDL 3.0 reference is exposed as a Resource** (`waypoint://framework/udl`). This is the small grounding move that turns "consider scaffolding" into "pre-teach *narrative, archetype, normative* with a Frayer card (UDL 2.1: Clarify vocabulary, symbols, and language structures)." Every modification in the output cites a real CAST 3.0 guideline or checkpoint number, which is how Goalbook-style products achieve "grounded, not generic."
 - **The differentiation workflow is a Prompt, not a Tool.** Putting the reasoning scaffold inside a prompt template (a) makes it user-discoverable as a slash command, (b) keeps the eight-section output contract versionable in source, (c) avoids hiding orchestration logic inside a tool handler. The prompt template pre-wires which resources to load, sets the operative rules, and enforces the output schema.
 - **Tools are small and read-only** — list students, list lessons, fetch one IEP section. They exist to bootstrap the workflow (so Claude can answer "what students do you have IEPs for?") and to support targeted re-reads. Following Anthropic's *Writing tools for agents* guidance: service-prefixed (`waypoint_*`), snake_case, action-first verbs, narrow descriptions, `readOnlyHint: true` annotations.
 
@@ -105,7 +105,7 @@ Running `/generate_modifications lesson_id=community-lowe student_id=jasmine-bai
 
 A few things worth noting in that output:
 
-- **Every modification cites both a UDL id and an IEP section.** E.g., "Pre-teach 5 words with a Frayer card *(UDL: Representation.G2, IEP: plaafp_academics)*."
+- **Every modification cites both a CAST 3.0 UDL number and an IEP section.** E.g., "Pre-teach 5 words with a Frayer card *(UDL 2: Language & Symbols, IEP: plaafp_academics)*."
 - **The PLAAFP gap is named explicitly:** "*~9th–10th-grade essay vs. 3rd-grade reader*" — the leveled passage in §6 rewrites paragraph 9 to ~3rd-grade reading level *while preserving RI.7.2*.
 - **The shutdown pattern shapes engagement design.** Rather than generic motivation tips, Engagement.G9 produces a specific shutdown-protocol card with three pre-practiced calming strategies from Jasmine's IEP counseling goal, a silent desk-corner tap signal, and a two-minute re-entry script.
 - **Today's writing task doubles as IEP goal progress monitoring** for her ELA annual goal (claim → evidence → analysis at 50% → 75%).

@@ -143,76 +143,143 @@ export function loadLesson(): Lesson {
   };
 }
 
-export type UdlGuideline = {
-  id: string;
-  principle: "Engagement" | "Representation" | "Action & Expression";
+export type UdlCheckpoint = {
+  number: string; // e.g. "7.1"
   title: string;
-  summary: string;
+  summary?: string;
 };
 
+export type UdlGuideline = {
+  principle: "Engagement" | "Representation" | "Action & Expression";
+  guideline_number: number; // 1–9 per CAST 3.0
+  guideline_title: string;
+  summary: string;
+  checkpoints: UdlCheckpoint[];
+};
+
+// CAST UDL 3.0 — three principles, nine guidelines (1–9), with checkpoints.
+// Engagement = 7–9, Representation = 1–3, Action & Expression = 4–6.
+// Source: https://udlguidelines.cast.org/
 export const UDL_GUIDELINES: UdlGuideline[] = [
+  // Representation: 1–3
   {
-    id: "Engagement.G7",
-    principle: "Engagement",
-    title: "Welcoming Interests & Identities",
-    summary:
-      "Recruit interest by connecting tasks to learners' identities, lived experience, and choice; minimize threats and distractions.",
-  },
-  {
-    id: "Engagement.G8",
-    principle: "Engagement",
-    title: "Sustaining Effort & Persistence",
-    summary:
-      "Heighten salience of goals; vary demands and supports to optimize challenge; foster collaboration; increase mastery-oriented feedback.",
-  },
-  {
-    id: "Engagement.G9",
-    principle: "Engagement",
-    title: "Emotional Capacity",
-    summary:
-      "Promote expectations and beliefs that optimize motivation; facilitate coping skills, self-assessment, and reflection.",
-  },
-  {
-    id: "Representation.G1",
     principle: "Representation",
-    title: "Perception",
+    guideline_number: 1,
+    guideline_title: "Perception",
     summary:
-      "Offer ways of customizing the display of information; alternatives for auditory and visual information (audio, captions, images, large print).",
+      "Offer ways of customizing the display of information; provide alternatives for auditory and visual information.",
+    checkpoints: [
+      { number: "1.1", title: "Support opportunities to customize the display of information" },
+      { number: "1.2", title: "Support multiple ways to perceive information" },
+      { number: "1.3", title: "Represent a diversity of perspectives and identities in authentic ways" },
+    ],
   },
   {
-    id: "Representation.G2",
     principle: "Representation",
-    title: "Language & Symbols",
+    guideline_number: 2,
+    guideline_title: "Language & Symbols",
     summary:
-      "Clarify vocabulary, symbols, syntax, and structure; pre-teach key terms; support decoding; illustrate through multiple media.",
+      "Clarify vocabulary, symbols, syntax, and structure; support decoding; illustrate through multiple media.",
+    checkpoints: [
+      { number: "2.1", title: "Clarify vocabulary, symbols, and language structures" },
+      { number: "2.2", title: "Support decoding of text, mathematical notation, and symbols" },
+      { number: "2.3", title: "Cultivate understanding and respect across languages and dialects" },
+      { number: "2.4", title: "Address biases in the use of language and symbols" },
+      { number: "2.5", title: "Illustrate through multiple media" },
+    ],
   },
   {
-    id: "Representation.G3",
     principle: "Representation",
-    title: "Building Knowledge",
+    guideline_number: 3,
+    guideline_title: "Building Knowledge",
     summary:
-      "Activate or supply background knowledge; highlight patterns, big ideas, and relationships; guide processing and visualization; maximize transfer.",
+      "Connect to prior knowledge; highlight patterns, critical features, and relationships; support transfer and generalization.",
+    checkpoints: [
+      { number: "3.1", title: "Connect prior knowledge to new learning" },
+      { number: "3.2", title: "Highlight and explore patterns, critical features, big ideas, and relationships" },
+      { number: "3.3", title: "Cultivate multiple ways of knowing and making meaning" },
+      { number: "3.4", title: "Maximize transfer and generalization" },
+    ],
+  },
+  // Action & Expression: 4–6
+  {
+    principle: "Action & Expression",
+    guideline_number: 4,
+    guideline_title: "Interaction",
+    summary:
+      "Vary and honor methods for response, navigation, and movement; optimize access to accessible materials and assistive technologies.",
+    checkpoints: [
+      { number: "4.1", title: "Vary and honor the methods for response, navigation, and movement" },
+      { number: "4.2", title: "Optimize access to accessible materials and assistive and accessible technologies" },
+    ],
   },
   {
-    id: "Action.G4",
     principle: "Action & Expression",
-    title: "Interaction",
+    guideline_number: 5,
+    guideline_title: "Expression & Communication",
     summary:
-      "Vary methods for response and navigation; optimize access to tools and assistive technologies.",
+      "Use multiple media for communication; use multiple tools for construction, composition, and creativity; build fluencies with graduated support.",
+    checkpoints: [
+      { number: "5.1", title: "Use multiple media for communication" },
+      { number: "5.2", title: "Use multiple tools for construction, composition, and creativity" },
+      { number: "5.3", title: "Build fluencies with graduated support for practice and performance" },
+      { number: "5.4", title: "Address biases related to modes of expression and communication" },
+    ],
   },
   {
-    id: "Action.G5",
     principle: "Action & Expression",
-    title: "Expression & Communication",
+    guideline_number: 6,
+    guideline_title: "Strategy Development",
     summary:
-      "Use multiple media for communication; provide sentence frames, scaffolded composition tools, and graduated supports for practice.",
+      "Set meaningful goals; anticipate and plan for challenges; organize information and resources; enhance capacity for monitoring progress.",
+    checkpoints: [
+      { number: "6.1", title: "Set meaningful goals" },
+      { number: "6.2", title: "Anticipate and plan for challenges" },
+      { number: "6.3", title: "Organize information and resources" },
+      { number: "6.4", title: "Enhance capacity for monitoring progress" },
+      { number: "6.5", title: "Challenge exclusionary practices" },
+    ],
+  },
+  // Engagement: 7–9
+  {
+    principle: "Engagement",
+    guideline_number: 7,
+    guideline_title: "Welcoming Interests & Identities",
+    summary:
+      "Optimize choice and autonomy; optimize relevance, value, and authenticity; nurture joy and play; minimize threats and distractions.",
+    checkpoints: [
+      { number: "7.1", title: "Optimize choice and autonomy" },
+      { number: "7.2", title: "Optimize relevance, value, and authenticity" },
+      { number: "7.3", title: "Nurture joy and play" },
+      { number: "7.4", title: "Address biases, threats, and distractions" },
+    ],
   },
   {
-    id: "Action.G6",
-    principle: "Action & Expression",
-    title: "Strategy Development",
+    principle: "Engagement",
+    guideline_number: 8,
+    guideline_title: "Sustaining Effort & Persistence",
     summary:
-      "Support planning, goal-setting, organization, and self-monitoring; teach strategies for managing frustration and persisting.",
+      "Heighten salience of goals and objectives; vary demands and resources; foster collaboration, interdependence, and belonging; increase mastery-oriented feedback.",
+    checkpoints: [
+      { number: "8.1", title: "Clarify the meaning and purpose of goals" },
+      { number: "8.2", title: "Optimize challenge and support" },
+      { number: "8.3", title: "Foster collaboration, interdependence, and collective learning" },
+      { number: "8.4", title: "Foster belonging and community" },
+      { number: "8.5", title: "Offer action-oriented feedback" },
+    ],
+  },
+  {
+    principle: "Engagement",
+    guideline_number: 9,
+    guideline_title: "Emotional Capacity",
+    summary:
+      "Recognize expectations, beliefs, and motivations; develop awareness of self and others; promote individual and collective reflection.",
+    checkpoints: [
+      { number: "9.1", title: "Recognize expectations, beliefs, and motivations" },
+      { number: "9.2", title: "Develop awareness of self and others" },
+      { number: "9.3", title: "Promote individual and collective reflection" },
+      { number: "9.4", title: "Cultivate empathy and restorative practices" },
+    ],
   },
 ];
 
@@ -220,16 +287,26 @@ export function udlMarkdown(): string {
   const lines = [
     "# CAST Universal Design for Learning Guidelines 3.0 (curated reference)",
     "",
-    "Three principles. Each guideline below should be cited by its `id` when justifying a modification.",
+    "Three principles, nine guidelines numbered 1–9, each with named checkpoints (e.g. `7.1`).",
+    "When citing in output, prefer the checkpoint number + title: `UDL 7.1 (Optimize choice and autonomy)`.",
+    "For a guideline-level citation: `UDL 7 (Welcoming Interests & Identities)`.",
     "",
   ];
   const principles = ["Engagement", "Representation", "Action & Expression"] as const;
   for (const p of principles) {
     lines.push(`## ${p}`);
-    for (const g of UDL_GUIDELINES.filter((g) => g.principle === p)) {
-      lines.push(`- **${g.id} — ${g.title}**: ${g.summary}`);
+    const guidelines = UDL_GUIDELINES.filter((g) => g.principle === p).sort(
+      (a, b) => a.guideline_number - b.guideline_number
+    );
+    for (const g of guidelines) {
+      lines.push(`### UDL ${g.guideline_number} — ${g.guideline_title}`);
+      lines.push(g.summary);
+      for (const c of g.checkpoints) {
+        const tail = c.summary ? `: ${c.summary}` : "";
+        lines.push(`- **${c.number}** ${c.title}${tail}`);
+      }
+      lines.push("");
     }
-    lines.push("");
   }
   return lines.join("\n");
 }
