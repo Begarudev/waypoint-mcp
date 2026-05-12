@@ -15,7 +15,6 @@ const IEP_KEYS: IepSectionKey[] = [
   "plaafp_behavioral",
   "accommodations",
   "modifications",
-  "goals",
   "goals_counseling",
   "goals_mathematics",
   "goals_ela",
@@ -61,13 +60,6 @@ test("accommodations contains 'Repeat directions' and excludes 'Multimodal'", ()
 
 test("modifications contains 'Multimodal'", () => {
   assert.match(iep.sections.modifications, /Multimodal/);
-});
-
-test("goals contains all three goal areas (Counseling, Mathematics, ELA)", () => {
-  const g = iep.sections.goals;
-  assert.match(g, /Counseling/);
-  assert.match(g, /Mathematics/);
-  assert.match(g, /\bELA\b/);
 });
 
 test("goals_counseling targets the counseling self-regulation goal", () => {

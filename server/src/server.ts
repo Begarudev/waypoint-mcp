@@ -235,7 +235,6 @@ const IEP_SECTION_KEYS = [
   "plaafp_behavioral",
   "accommodations",
   "modifications",
-  "goals",
   "goals_counseling",
   "goals_mathematics",
   "goals_ela",

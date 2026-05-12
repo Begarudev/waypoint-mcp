@@ -14,7 +14,6 @@ export type IepSectionKey =
   | "plaafp_behavioral"
   | "accommodations"
   | "modifications"
-  | "goals"
   | "goals_counseling"
   | "goals_mathematics"
   | "goals_ela"
@@ -111,7 +110,6 @@ export function loadIep(): Iep {
     ),
     accommodations: slice(raw, /ACCOMMODATIONS AND MODIFICATIONS/, /Modifications:/),
     modifications: slice(raw, /Modifications:\s*List/, /MEASURABLE ANNUAL GOALS/),
-    goals: slice(raw, /MEASURABLE ANNUAL GOALS/, /Participation in the General Education Setting/),
     goals_counseling: slice(
       raw,
       /Goal Area:\s*\n?\s*1 - Counseling/,
