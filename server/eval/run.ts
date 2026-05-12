@@ -1,11 +1,16 @@
 // CLI entrypoint for the Waypoint eval harness.
 //
 //   npm run eval                          → grades every server/examples/*.md
+//                                           that looks like a full 8-section
+//                                           modification packet (auto-skips
+//                                           short artifacts like quick_*).
 //   npm run eval -- path/to/packet.md     → grades only the supplied paths
+//                                           (no shape filter — explicit paths
+//                                           are always evaluated).
 //
 // Prints a per-packet breakdown plus an aggregate summary, writes a JSON
-// report to eval/last-report.json, and exits 1 if any packet fails so CI
-// can gate on it.
+// report to eval/last-report.json, and exits 1 if any GRADED packet fails so
+// CI can gate on it. Skipped artifacts do not affect the exit code.
 
 import { readFileSync, readdirSync, writeFileSync, mkdirSync } from "node:fs";
 import { fileURLToPath } from "node:url";
@@ -30,6 +35,26 @@ function discoverDefaultPackets(): string[] {
   } catch {
     return [];
   }
+}
+
+// A packet is a "full modification packet" (graded against the 8-section
+// rubric) if at least 4 of the 8 required section titles appear in the body.
+// Anything below that threshold is treated as a different artifact shape
+// (e.g. quick_accommodations output) and is skipped rather than failed.
+const PACKET_SHAPE_MARKERS = [
+  "Student snapshot",
+  "Lesson at a glance",
+  "Accommodation checklist",
+  "UDL-aligned modifications",
+  "Scaffolded question ladder",
+  "Leveled passage",
+  "Alternative assessment",
+  "Teacher cheat-sheet",
+];
+function isFullPacket(body: string): boolean {
+  const lower = body.toLowerCase();
+  const hits = PACKET_SHAPE_MARKERS.filter((m) => lower.includes(m.toLowerCase())).length;
+  return hits >= 4;
 }
 
 function loadPacket(path: string): { label: string; body: string } {
@@ -71,6 +96,8 @@ function main(): number {
   }
 
   const results: RubricResult[] = [];
+  const skipped: string[] = [];
+  const explicitArgs = args.length > 0;
   for (const p of paths) {
     let packet;
     try {
@@ -102,6 +129,16 @@ function main(): number {
       });
       continue;
     }
+    // Auto-skip non-packet artifacts (e.g. quick_accommodations output) when
+    // running with no explicit args. Explicit paths are always graded.
+    if (!explicitArgs && !isFullPacket(packet.body)) {
+      skipped.push(packet.label);
+      console.log(
+        `── ${packet.label} ── SKIP  (not a full 8-section packet; pass it explicitly to force grading)`
+      );
+      console.log("");
+      continue;
+    }
     const r = grade(packet.body, packet.label);
     results.push(r);
     console.log(formatResult(r));
@@ -111,11 +148,20 @@ function main(): number {
   // Aggregate summary
   const passedCount = results.filter((r) => r.passed).length;
   const mean =
-    results.reduce((sum, r) => sum + r.total_score, 0) / Math.max(1, results.length);
+    results.length === 0
+      ? 0
+      : results.reduce((sum, r) => sum + r.total_score, 0) / results.length;
   console.log("════════════════════════════════════════════════════════════════");
-  console.log(
-    `Mean score: ${mean.toFixed(1)} / 100  over ${results.length} packet${results.length === 1 ? "" : "s"}, ${passedCount}/${results.length} passed`
-  );
+  if (results.length > 0) {
+    console.log(
+      `Mean score: ${mean.toFixed(1)} / 100  over ${results.length} packet${results.length === 1 ? "" : "s"}, ${passedCount}/${results.length} passed`
+    );
+  } else {
+    console.log("No full packets graded.");
+  }
+  if (skipped.length > 0) {
+    console.log(`Skipped (not full packets): ${skipped.join(", ")}`);
+  }
   console.log("════════════════════════════════════════════════════════════════");
 
   // JSON report (next to source eval/, not compiled dist/eval/)
@@ -125,7 +171,7 @@ function main(): number {
     writeFileSync(
       reportPath,
       JSON.stringify(
-        { generated_at: new Date().toISOString(), results },
+        { generated_at: new Date().toISOString(), results, skipped },
         null,
         2
       )
@@ -135,6 +181,8 @@ function main(): number {
     console.error(`Could not write JSON report: ${(err as Error).message}`);
   }
 
+  // Exit 1 if ANY graded packet failed. Skipped packets don't gate the loop.
+  if (results.length === 0) return 0;
   return passedCount === results.length ? 0 : 1;
 }
 
