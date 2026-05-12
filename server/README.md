@@ -121,6 +121,16 @@ A few things worth noting in the longer `generate_modifications` output:
 - **Today's writing task doubles as IEP goal progress monitoring** for her ELA annual goal (claim → evidence → analysis at 50% → 75%).
 - **AT (text-to-speech) is correctly flagged as a *new* recommendation** rather than treated as already in place — the IEP marks AT: No.
 
+### A second example — different student, different lesson, different modality
+
+📄 **[`examples/marcus_fractions_lesson.md`](examples/marcus_fractions_lesson.md)** — `generate_modifications` for `lesson_id=fractions-5nf1`, `student_id=marcus-chen`.
+
+Marcus is a 9th-grader with SLD-Dyscalculia: strong reader, 5th-grade math, math-specific anxiety presenting as **procrastination + over-checking** (not Jasmine's silent shutdown). The lesson is a 5th-grade math procedural-fluency lesson on 5.NF.A.1 — adding/subtracting fractions with unlike denominators — and deliberately contains **no extended reading passage**. What to notice:
+
+- **§6 is a *parallel scaffolded artifact*, not a leveled passage.** Operative Rule 9 fires: the section becomes an annotated worked example with the strategy made visible side-by-side, plus a fill-in template Marcus uses on every problem. Same standard, scaffolded — no fabricated passage to rewrite.
+- **Different behavioral pattern, different engagement design.** The §4 Engagement bullets target the over-checking loop — a "Step 1 only" silent re-entry cue, a "check ONCE" rule on the strategy card, and a strategy-question script that converts reassurance-seeking ("is this right?") into a self-advocacy moment scored against his Counseling annual goal (20% → 80% strategy-specific help-asking).
+- **TI-30XS and Desmos are *not* flagged as new recommendations.** They're already standing AT in Marcus's IEP profile, so the packet treats them as available and instead makes a deliberate pedagogical choice to not use the calculator today (procedural-fluency lesson) — Operative Rule 10 working as intended.
+
 ---
 
 ## Repo layout
@@ -132,10 +142,13 @@ server/
 ├── README.md             # this file
 ├── examples/
 │   ├── jasmine_community_lesson.md       # sample output from generate_modifications
-│   └── jasmine_quick_accommodations.md   # sample output from quick_accommodations
+│   ├── jasmine_quick_accommodations.md   # sample output from quick_accommodations
+│   └── marcus_fractions_lesson.md        # second example: non-reading lesson (Operative Rule 9)
 ├── data/
 │   ├── lesson-community.txt              # pdftotext extraction of root /lesson
-│   └── iep-jasmine.txt                   # pdftotext extraction of root /iep
+│   ├── iep-jasmine.txt                   # pdftotext extraction of root /iep
+│   ├── iep-marcus.txt                    # synthetic IEP fixture (SLD-Dyscalculia)
+│   └── lesson-fractions.txt              # synthetic math-lesson fixture (5.NF.A.1, no reading passage)
 └── src/
     ├── server.ts         # MCP server entry: resources + tools + prompts + stdio
     ├── data.ts           # lesson/IEP registry + section splitters + UDL reference
@@ -149,7 +162,7 @@ server/
 
 This MVP handles one lesson and one IEP. To go from here to a real product:
 
-- **Multi-student / multi-lesson catalog.** The list-tools already return arrays; the loaders move behind a `LessonStore` / `IepStore` interface backed by Postgres or object storage.
+- **Catalog scale.** The registry now holds two IEPs and two lessons (Jasmine + reading lesson; Marcus + math lesson — both synthetic but enough to exercise the multi-student / multi-lesson story and the non-reading-lesson fallback). To scale further, the loaders move behind a `LessonStore` / `IepStore` interface backed by Postgres or object storage. The current registry assumes a hand-written parser per source layout — at production scale that parser becomes a single LLM-driven ingest step with cached, human-reviewable section maps.
 - **IEP parsing.** The current section splitter is a heading-aware regex over a `pdftotext -layout` dump. Production needs a real PDF/DOCX parser with named-section extraction (likely Claude itself, run once at ingest, with the parse cached and human-reviewable). The accommodations table in particular should be promoted from prose to structured JSON so it can be cited and audited.
 - **UDL reference.** The 9-guideline curated set in `data.ts` is a placeholder. Real version pulls the full CAST 3.0 guideline + checkpoint tree, possibly behind a `waypoint_search_udl` tool when the corpus stops fitting in context.
 - **Search becomes worthwhile when the catalog grows.** Today the lesson and IEP fit in context; once a teacher has 30 students and a year's curriculum, the design shifts toward `waypoint_search_curriculum(query, filters)` and `waypoint_find_iep_section(student_id, query)`, with the prompt template orchestrating retrieval rather than pre-loading everything.
