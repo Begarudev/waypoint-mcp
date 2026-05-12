@@ -38,6 +38,10 @@ SELF-CHECK PROCEDURE
 After producing the packet, run a single auditable self-check pass: invoke the \`waypoint_lint_packet\` tool with the full markdown of your packet as the \`packet\` argument. The tool returns a structured report with a 0–100 \`score\`, a list of \`findings\` (each with \`rule\`, \`severity\`, \`message\`), and section/citation statistics. If the report shows \`score < 85\` or any \`severity: "error"\` finding, revise the packet to address the findings and emit the corrected version. Limit yourself to **one** revision pass; on the second emission, prepend a one-line note: \`> Self-check: revised from initial lint score X to Y.\` This lint report is auditable, not opaque — the rules it enforces are exactly the ones above (sections present and ordered, canonical citation grammar, valid IEP keys, citation density, verbatim accommodations).`;
 
 function fmtSection(label: string, body: string): string {
+  // Skip empty section slots so reading lessons don't render empty math-modality
+  // headings (and vice-versa). Without this, fmtSection emitted a noisy
+  // `### <label>\n\n` block for each unused modality slot.
+  if (!body || body.trim() === "") return "";
   return `\n\n### ${label}\n\n${body.trim()}`;
 }
 

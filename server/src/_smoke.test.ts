@@ -178,6 +178,22 @@ test("loadLesson('does-not-exist') throws a clear error", () => {
   assert.throws(() => loadLesson("does-not-exist"), /Unknown lesson id: "does-not-exist"/);
 });
 
+test("generate_modifications prompt does not emit empty math-modality headings for a reading lesson", () => {
+  const prompt = buildGenerateModificationsPrompt(lesson, iep, udlMarkdown());
+  const text = prompt.messages[0].content.text;
+  assert.doesNotMatch(text, /### Worked example/);
+  assert.doesNotMatch(text, /### Exit ticket/);
+  assert.doesNotMatch(text, /### Direct instruction/);
+});
+
+test("generate_modifications prompt does not emit empty reading-modality headings for a math lesson", () => {
+  const prompt = buildGenerateModificationsPrompt(fractions, marcus, udlMarkdown());
+  const text = prompt.messages[0].content.text;
+  assert.doesNotMatch(text, /### Reading passage/);
+  assert.doesNotMatch(text, /### Independent practice — multiple choice/);
+  assert.doesNotMatch(text, /### Student-led discussion/);
+});
+
 test("generate_modifications prompt wires in the waypoint_lint_packet self-check", () => {
   // Regression guard: Rule 11 + the SELF-CHECK PROCEDURE block must instruct
   // the model to call the lint tool by name. Without this assertion, a future
