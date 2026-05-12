@@ -51,9 +51,21 @@ export type Lesson = {
   raw: string;
 };
 
-function slice(text: string, startPat: RegExp, endPat?: RegExp): string {
+function slice(
+  text: string,
+  startPat: RegExp,
+  endPat?: RegExp,
+  opts: { allowMissing?: boolean } = {}
+): string {
   const startMatch = text.match(startPat);
-  if (!startMatch || startMatch.index === undefined) return "";
+  if (!startMatch || startMatch.index === undefined) {
+    if (opts.allowMissing) return "";
+    throw new Error(
+      `slice(): start pattern ${startPat} not found in source text. ` +
+        `Either the source format changed or the regex is wrong. ` +
+        `Pass { allowMissing: true } if this section is genuinely optional.`
+    );
+  }
   const startIdx = startMatch.index;
   if (!endPat) return text.slice(startIdx).trim();
   const tail = text.slice(startIdx + startMatch[0].length);
@@ -63,6 +75,17 @@ function slice(text: string, startPat: RegExp, endPat?: RegExp): string {
       ? startIdx + startMatch[0].length + endMatch.index
       : text.length;
   return text.slice(startIdx, endIdx).trim();
+}
+
+function assertAllSectionsPopulated(
+  label: string,
+  sections: Record<string, string>
+): void {
+  for (const [k, v] of Object.entries(sections)) {
+    if (!v || v.trim().length === 0) {
+      throw new Error(`${label} section ${k} is empty`);
+    }
+  }
 }
 
 export function loadIep(): Iep {
@@ -94,6 +117,8 @@ export function loadIep(): Iep {
     ),
     placement: slice(raw, /Participation in the General Education Setting/, /SERVICE DELIVERY/),
   };
+
+  assertAllSectionsPopulated("IEP", sections);
 
   return {
     id: "jasmine-bailey",
@@ -130,6 +155,8 @@ export function loadLesson(): Lesson {
     ),
     student_discussion: slice(raw, /Student-Led Discussion/),
   };
+
+  assertAllSectionsPopulated("Lesson", sections);
 
   return {
     id: "community-lowe",
